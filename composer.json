@@ -1,0 +1,7 @@
+{
+  "name": "interwave/interwave-web",
+  "description": "Interwave web project - PHP-only SCSS compilation using scssphp",
+  "require": {
+    "scssphp/scssphp": "^1.11"
+  }
+}

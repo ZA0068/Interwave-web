@@ -1,0 +1,93 @@
+# ==============================
+# Interwave - Apache Rules
+# ==============================
+
+# Prevent directory listings
+Options -Indexes
+
+# ------------------------------
+# Security headers (mod_headers)
+# ------------------------------
+<IfModule mod_headers.c>
+	Header always set X-Content-Type-Options "nosniff"
+	Header always set X-Frame-Options "SAMEORIGIN"
+	Header always set X-XSS-Protection "1; mode=block"
+	Header always set Referrer-Policy "strict-origin-when-cross-origin"
+	Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+	Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+	Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self';"
+</IfModule>
+
+# ------------------------------
+# Deny access to sensitive files
+# ------------------------------
+<FilesMatch "(^\.|~$|\.env$|\.bak$|\.dist$|\.sql$|\.log$|\.htaccess|\.htpasswd|\.ini|\.sh|\.json|\.yml|\.lock|\.xml|\.md|\.txt)$">
+	Require all denied
+</FilesMatch>
+
+# ------------------------------
+# Rewrite rules
+# ------------------------------
+RewriteEngine On
+RewriteBase /
+
+# --- Redirect root for localhost & interwave.local to /html/contents/Index.html
+RewriteCond %{HTTP_HOST} ^(localhost|interwave\.local)$ [NC]
+RewriteCond %{REQUEST_URI} ^/?$
+RewriteRule ^$ /html/contents/Index.html [L,QSA]
+
+# --- Deny direct access to private directories
+RewriteRule ^(vendor|tools|php/config|\.git)(/.*)?$ - [F,L]
+
+# --- Skip rewrites if file or directory exists
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# --- Hide .html extensions
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [L,QSA]
+
+# --- Restrict HTML access to specific aliases
+RewriteCond %{REQUEST_URI} !^/alias-name$
+RewriteRule ^.*\.html$ - [F,L]
+
+# --- Aliases for PHP routes
+RewriteRule ^Login$ /php/Login/login.php [L,QSA]
+RewriteRule ^Session$ /php/Login/check_session.php [L,QSA]
+RewriteRule ^Register$ /php/Login/register.php [L,QSA]
+
+# --- Redirect all non-existent routes to main Index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /html/contents/Index.html [L,QSA]
+
+# --- Redirect root URL and /Main to Index.html
+RewriteCond %{REQUEST_URI} ^/$ [OR]
+RewriteCond %{REQUEST_URI} ^/Main$
+RewriteRule ^ /html/contents/Index.html [L,QSA]
+
+# ------------------------------
+# File access rules
+# ------------------------------
+
+# Allow only POST requests for login.php
+<FilesMatch "login\.php$">
+    <If "%{REQUEST_METHOD} != 'POST'">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Allow only POST requests for register.php
+<FilesMatch "register\.php$">
+    <If "%{REQUEST_METHOD} != 'POST'">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Allow access to JavaScript and CSS files
+<FilesMatch "\.(js|css)$">
+    Require all granted
+</FilesMatch>
