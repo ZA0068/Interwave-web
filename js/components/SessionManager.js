@@ -39,6 +39,9 @@ class SessionManager {
         const icon = document.querySelector('.icon');
         if (!icon) return;
 
+        // Always show the icon after first session check
+        icon.classList.add('session-checked');
+
         if (this.isLoggedIn) {
             icon.classList.add('active');
             icon.classList.remove('inactive');
@@ -52,7 +55,14 @@ class SessionManager {
         // Hide/show login panel
         const loginPanel = document.querySelector('.login-panel');
         if (loginPanel) {
-            loginPanel.style.display = this.isLoggedIn ? 'none' : 'block';
+            // Always show the panel after first session check
+            loginPanel.classList.add('session-checked');
+            
+            if (this.isLoggedIn) {
+                loginPanel.style.display = 'none';
+            } else {
+                loginPanel.style.display = 'block';
+            }
         }
 
         // Show/hide logout elements
@@ -154,15 +164,53 @@ class SessionManager {
 // Create singleton instance
 const sessionManager = new SessionManager();
 
+// Immediate session check on script load (before DOM ready)
+(async () => {
+    try {
+        const response = await fetch('/php/Login/check_session.php', {
+            credentials: 'same-origin'
+        });
+        const data = await response.json();
+        
+        sessionManager.isLoggedIn = data.isLoggedIn;
+        sessionManager.user = data.user;
+        
+        // Update icon immediately if it exists
+        const icon = document.querySelector('.icon');
+        if (icon) {
+            sessionManager.updateIconState();
+        }
+        
+        // Update login panel immediately if it exists
+        const loginPanel = document.querySelector('.login-panel');
+        if (loginPanel) {
+            sessionManager.updateUIVisibility();
+        }
+    } catch (error) {
+        console.error('Early session check failed:', error);
+        
+        // Fallback: show UI elements even if session check fails
+        const icon = document.querySelector('.icon');
+        if (icon) {
+            icon.classList.add('session-checked');
+        }
+        
+        const loginPanel = document.querySelector('.login-panel');
+        if (loginPanel) {
+            loginPanel.classList.add('session-checked');
+        }
+    }
+})();
+
 // Auto-initialize when DOM is loaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         // Small delay to ensure header is loaded
-        setTimeout(() => sessionManager.init(), 100);
+        setTimeout(() => sessionManager.init(), 50);
     });
 } else {
     // DOM already loaded
-    setTimeout(() => sessionManager.init(), 100);
+    setTimeout(() => sessionManager.init(), 50);
 }
 
 export default sessionManager;
