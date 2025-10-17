@@ -1,75 +1,66 @@
 // LoadHTMLContainer.js
 export default class LoadHTMLContainer {
     constructor() {
-        this.tasks = [];   // HTML tasks
-        this.scripts = []; // JS scripts to load
+        this.htmlTasks = [];
+        this.jsTasks = [];
     }
 
     /**
-     * Add an HTML or JS task.
-     * @param {string|null} selector - Target CSS selector for HTML, or null for JS
-     * @param {string} src - URL of HTML or JS file
-     * @param {string|null} dst - Optional container HTML file to load first (HTML only)
+     * Add HTML fragment task.
+     * @param {string} selector - Target CSS selector for HTML
+     * @param {string} src - URL of the HTML file to load
+     * @param {string|null} dst - Optional container HTML to load first
      */
-    add(selector, src, dst = null) {
-        if (typeof src !== "string") {
-            throw new Error("add() expects src as a string URL");
-        }
-
-        // JS task: selector is null or src ends with .js
-        if (!selector || src.endsWith(".js")) {
-            this.scripts.push(src);
-            return;
-        }
-
-        // HTML task
-        this.tasks.push({ selector, src, dst });
+    addHTML(selector, src, dst = null) {
+        if (!selector || !src) throw new Error("addHTML requires selector and src");
+        this.htmlTasks.push({ selector, src, dst });
     }
 
     /**
-     * Load all HTML fragments and JS scripts sequentially.
+     * Add JS script task.
+     * @param {string} src - URL of JS file
+     */
+    addJS(src) {
+        if (!src) throw new Error("addJS requires src");
+        this.jsTasks.push(src);
+    }
+
+    /**
+     * Run all HTML and JS tasks sequentially.
      */
     async run() {
-        // --- Load HTML ---
-        for (const task of this.tasks) {
+        // --- Load HTML fragments sequentially ---
+        for (const { selector, src, dst } of this.htmlTasks) {
             try {
-                const html = await this.fetchText(task.src);
+                const html = await this.fetchText(src);
 
-                // Resolve target
-                let target;
-                if (task.dst && task.dst.endsWith(".html")) {
-                    target = await this.ensureContainerLoaded(task.dst, task.selector);
-                } else {
-                    target = document.querySelector(task.selector);
-                }
+                // Ensure container exists (load dst if provided)
+                const target = dst
+                    ? await this.ensureContainerLoaded(dst, selector)
+                    : document.querySelector(selector);
 
                 if (!target) {
-                    console.warn(`⚠️ Target not found for selector: ${task.selector}`);
+                    console.warn(`⚠️ Target not found for selector: ${selector}`);
                     continue;
                 }
 
                 target.innerHTML = html;
-
-                // Execute inline <script> in loaded HTML
                 this._executeInlineScripts(target);
             } catch (err) {
-                console.error(`❌ Failed to load HTML (${task.src}):`, err);
+                console.error(`❌ Failed to load HTML (${src}):`, err);
             }
         }
-        this.tasks = [];
+        this.htmlTasks = [];
 
-        // --- Load JS scripts ---
-        for (const src of this.scripts) {
+        // --- Load external JS scripts sequentially at end of body ---
+        for (const src of this.jsTasks) {
             try {
-                const js = await this.fetchText(src);
-                const scriptEl = document.createElement("script");
-                scriptEl.textContent = js;
-                document.body.appendChild(scriptEl);
+                await this.loadScript(src);
             } catch (err) {
                 console.error(`❌ Failed to load JS (${src}):`, err);
             }
         }
-        this.scripts = [];
+        this.jsTasks = [];
     }
 
     /**

@@ -1,6 +1,9 @@
 // JWT-based Session Manager with persistent login
 class SessionManager {
     constructor() {
+        this.iconElement = document.querySelector('.site-header .icon');
+    this.checkInterval = 30000; // Check every 30 seconds
+        this.intervalId = null;
         this.isLoggedIn = false;
         this.user = null;
         this.initialized = false;
