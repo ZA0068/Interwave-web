@@ -88,11 +88,7 @@ export default class LoadHTMLContainer {
     }
 
     /**
-<<<<<<< HEAD
      * Fetch text from URL.
-=======
-     * Fetch text content from a URL.
->>>>>>> parent of 71f2a9b (init)
      */
     async fetchText(url) {
         const res = await fetch(url);
@@ -101,7 +97,6 @@ export default class LoadHTMLContainer {
     }
 
     /**
-<<<<<<< HEAD
      * Load external JS script sequentially at the end of body.
      */
     loadScript(src) {
@@ -117,9 +112,6 @@ export default class LoadHTMLContainer {
 
     /**
      * Execute inline <script> tags inside a container at the end of body.
-=======
-     * Execute inline <script> tags inside a container element.
->>>>>>> parent of 71f2a9b (init)
      */
     _executeInlineScripts(container) {
         const scripts = Array.from(container.querySelectorAll("script"));
@@ -128,7 +120,6 @@ export default class LoadHTMLContainer {
             script.type = oldScript.type || "text/javascript";
             if (oldScript.src) {
                 script.src = oldScript.src;
-<<<<<<< HEAD
                 script.type = oldScript.type || "module";
             } else {
                 script.textContent = oldScript.textContent;
@@ -136,12 +127,5 @@ export default class LoadHTMLContainer {
             document.body.appendChild(script); // append at end of body
             oldScript.remove();
         }
-=======
-            } else {
-                script.textContent = oldScript.textContent;
-            }
-            oldScript.parentNode.replaceChild(script, oldScript);
-        });
->>>>>>> parent of 71f2a9b (init)
     }
 }

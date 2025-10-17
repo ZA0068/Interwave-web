@@ -1,5 +1,16 @@
 <?php
 session_start();
 session_destroy();
+
+// Clear JWT cookie
+setcookie('auth_token', '', [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'httponly' => true,
+    'secure' => false,
+    'samesite' => 'Lax'
+]);
+
 header("Content-Type: application/json");
-echo json_encode(['success' => true]);
+echo json_encode(['success' => true, 'message' => 'Logged out successfully']);
+?>

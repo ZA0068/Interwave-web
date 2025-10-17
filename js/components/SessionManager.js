@@ -1,146 +1,168 @@
-// Session status checker and icon manager
+// JWT-based Session Manager with persistent login
 class SessionManager {
-<<<<<<< HEAD
     constructor() {
-        this.iconElement = document.querySelector('.site-header .icon');
-    this.checkInterval = 30000; // Check every 30 seconds
-=======
-    constructor(iconSelector = '.site-header .icon') {
-        this.iconElement = document.querySelector(iconSelector);
-        this.checkInterval = 30000; // Check every 30 seconds
->>>>>>> parent of 71f2a9b (init)
-        this.intervalId = null;
         this.isLoggedIn = false;
-        this._boundMouseEnter = null;
-        this._boundMouseLeave = null;
-        
-        // Bind methods
-        this.updateIconState = this.updateIconState.bind(this);
-        this.checkSession = this.checkSession.bind(this);
-        this.handleIconClick = this.handleIconClick.bind(this);
-        this.handleLogoutClick = this.handleLogoutClick.bind(this);
-        
-        // Initialize
-        if (this.iconElement) {
-            this.initializeSessionChecking();
-            this.iconElement.addEventListener('click', this.handleIconClick);
-        }
+        this.user = null;
+        this.initialized = false;
     }
 
-    updateIconState(isLoggedIn) {
-        if (!this.iconElement) return;
-
-        const container = this.iconElement.querySelector('#logoutButtonContainer');
-        const headerLogoutLink = document.querySelector('.main-nav a.logout-link');
-        const logoutToggle = this.iconElement.querySelector('#logoutToggle');
-        if (isLoggedIn) {
-            this.iconElement.classList.add('active');
-            this.isLoggedIn = true;
-            // Enable hover handlers to show dropdown
-            if (!this._boundMouseEnter) {
-                this._boundMouseEnter = () => this.iconElement.classList.add('show-logout');
-                this._boundMouseLeave = () => this.iconElement.classList.remove('show-logout');
-                this.iconElement.addEventListener('mouseenter', this._boundMouseEnter);
-                this.iconElement.addEventListener('mouseleave', this._boundMouseLeave);
-            }
-            if (headerLogoutLink) {
-                headerLogoutLink.style.display = '';
-                headerLogoutLink.removeEventListener('click', this.handleHeaderLogoutClick);
-                headerLogoutLink.addEventListener('click', this.handleHeaderLogoutClick);
-            }
-            // Wire up logout click inside dropdown (loaded via HTML)
-            const btn = this.iconElement.querySelector('#logoutButton');
-            if (btn) {
-                btn.removeEventListener('click', this.handleLogoutClick);
-                btn.addEventListener('click', this.handleLogoutClick);
-            }
-        } else {
-            this.iconElement.classList.remove('active');
-            this.iconElement.classList.remove('show-logout');
-            this.isLoggedIn = false;
-            if (this._boundMouseEnter) {
-                this.iconElement.removeEventListener('mouseenter', this._boundMouseEnter);
-                this.iconElement.removeEventListener('mouseleave', this._boundMouseLeave);
-                this._boundMouseEnter = null;
-                this._boundMouseLeave = null;
-            }
-            if (logoutToggle) logoutToggle.checked = false;
-            if (headerLogoutLink) headerLogoutLink.style.display = 'none';
-        }
+    async init() {
+        if (this.initialized) return;
+        
+        await this.refreshSessionState();
+        this.setupEventListeners();
+        this.initialized = true;
     }
 
-    async checkSession() {
+    async refreshSessionState() {
         try {
-            const response = await fetch('/Session', {
-                credentials: 'same-origin' // Important for session cookies
+            const response = await fetch('/php/Login/check_session.php', {
+                credentials: 'same-origin'
             });
-            
-            if (!response.ok) throw new Error('Network response was not ok');
-            
             const data = await response.json();
-            this.updateIconState(data.isLoggedIn);
             
+            this.isLoggedIn = data.isLoggedIn;
+            this.user = data.user;
+            
+            this.updateIconState();
+            this.updateUIVisibility();
         } catch (error) {
             console.error('Session check failed:', error);
+            this.isLoggedIn = false;
+            this.user = null;
+            this.updateIconState();
+            this.updateUIVisibility();
         }
     }
 
-    initializeSessionChecking() {
-        // Check immediately
-        this.checkSession();
+    updateIconState() {
+        const icon = document.querySelector('.icon');
+        if (!icon) return;
+
+        if (this.isLoggedIn) {
+            icon.classList.add('active');
+            icon.classList.remove('inactive');
+        } else {
+            icon.classList.remove('active');
+            icon.classList.add('inactive');
+        }
+    }
+
+    updateUIVisibility() {
+        // Hide/show login panel
+        const loginPanel = document.querySelector('.login-panel');
+        if (loginPanel) {
+            loginPanel.style.display = this.isLoggedIn ? 'none' : 'block';
+        }
+
+        // Show/hide logout elements
+        const headerLogout = document.getElementById('headerLogout');
         
-        // Set up periodic checking
-        this.intervalId = setInterval(this.checkSession, this.checkInterval);
+        if (headerLogout) {
+            headerLogout.style.display = this.isLoggedIn ? 'inline-block' : 'none';
+        }
+    }
+
+    setupEventListeners() {
+        // Icon hover for dropdown
+        const iconContainer = document.querySelector('.icon-container');
+        const logoutDropdown = document.getElementById('logoutDropdown');
         
-        // Clean up on page unload
-        window.addEventListener('unload', () => {
-            if (this.intervalId) {
-                clearInterval(this.intervalId);
-            }
-        });
+        if (iconContainer && logoutDropdown) {
+            let hoverTimeout;
+            
+            const showDropdown = () => {
+                if (this.isLoggedIn) {
+                    clearTimeout(hoverTimeout);
+                    logoutDropdown.style.display = 'block';
+                    // Force reflow
+                    logoutDropdown.offsetHeight;
+                    logoutDropdown.classList.add('show');
+                }
+            };
+            
+            const hideDropdown = () => {
+                hoverTimeout = setTimeout(() => {
+                    logoutDropdown.classList.remove('show');
+                    setTimeout(() => {
+                        if (!logoutDropdown.classList.contains('show')) {
+                            logoutDropdown.style.display = 'none';
+                        }
+                    }, 200);
+                }, 300);
+            };
+            
+            iconContainer.addEventListener('mouseenter', showDropdown);
+            iconContainer.addEventListener('mouseleave', hideDropdown);
+            
+            logoutDropdown.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimeout);
+            });
+            
+            logoutDropdown.addEventListener('mouseleave', hideDropdown);
+        }
+
+        // Header logout button
+        const headerLogout = document.getElementById('headerLogout');
+        if (headerLogout) {
+            headerLogout.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.logout();
+            });
+        }
+
+        // Icon dropdown logout button
+        const iconLogout = document.getElementById('iconLogout');
+        if (iconLogout) {
+            iconLogout.addEventListener('click', () => {
+                this.logout();
+            });
+        }
     }
 
-    // Public method to force a session check
-    refreshSessionState() {
-        return this.checkSession();
-    }
-
-    async handleIconClick() {
-        if (!this.isLoggedIn) return; // Only handle clicks when logged in
-        // Toggle sticky dropdown via checkbox to persist visibility
-        const toggle = this.iconElement.querySelector('#logoutToggle');
-        if (toggle) toggle.checked = !toggle.checked;
-    }
-
-    async handleLogoutClick(ev) {
-        ev?.preventDefault?.();
-        if (!this.isLoggedIn) return;
-        await this.performLogout();
-    }
-
-    async performLogout() {
+    async logout() {
         try {
             const response = await fetch('/php/Login/logout.php', {
                 method: 'POST',
                 credentials: 'same-origin'
             });
-            if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
-            if (data.success) {
-                this.updateIconState(false);
+            
+            if (response.ok) {
+                this.isLoggedIn = false;
+                this.user = null;
+                this.updateIconState();
+                this.updateUIVisibility();
+                
+                // Hide dropdown with animation
+                const logoutDropdown = document.getElementById('logoutDropdown');
+                if (logoutDropdown) {
+                    logoutDropdown.classList.remove('show');
+                    setTimeout(() => {
+                        logoutDropdown.style.display = 'none';
+                    }, 200);
+                }
+                
+                // Optional: reload page to reset state
                 window.location.reload();
             }
         } catch (error) {
             console.error('Logout failed:', error);
         }
     }
-
-    handleHeaderLogoutClick(ev) {
-        ev?.preventDefault?.();
-        this.performLogout();
-    }
 }
 
-// Create and export singleton instance
+// Create singleton instance
 const sessionManager = new SessionManager();
+
+// Auto-initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Small delay to ensure header is loaded
+        setTimeout(() => sessionManager.init(), 100);
+    });
+} else {
+    // DOM already loaded
+    setTimeout(() => sessionManager.init(), 100);
+}
+
 export default sessionManager;

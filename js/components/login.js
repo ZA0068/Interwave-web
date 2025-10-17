@@ -36,7 +36,7 @@ export default function initLoginForm() {
 
             const json = await res.json();
 
-            if (res.ok && json) {
+            if (res.ok && json.message) {
                 msg.style.color = 'green';
                 msg.textContent = json.message || 'Login successful';
                 await sessionManager.refreshSessionState();
@@ -44,7 +44,7 @@ export default function initLoginForm() {
                     if (loginPanel) loginPanel.style.display = 'none';
             } else {
                 msg.style.color = 'crimson';
-                msg.textContent = json.message || 'Invalid credentials';
+                msg.textContent = json.message || 'Login failed';
             }
         } catch (err) {
             msg.style.color = 'crimson';
