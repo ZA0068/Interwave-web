@@ -7,12 +7,13 @@ export default class LoadHTMLContainer {
 
     /**
      * Add HTML fragment task.
-     * @param {string} selector - Target element selector
-     * @param {string} src - URL of HTML file
+     * @param {string} selector - Target CSS selector for HTML
+     * @param {string} src - URL of the HTML file to load
+     * @param {string|null} dst - Optional container HTML to load first
      */
-    addHTML(selector, src) {
+    addHTML(selector, src, dst = null) {
         if (!selector || !src) throw new Error("addHTML requires selector and src");
-        this.htmlTasks.push({ selector, src });
+        this.htmlTasks.push({ selector, src, dst });
     }
 
     /**
@@ -25,18 +26,24 @@ export default class LoadHTMLContainer {
     }
 
     /**
-     * Run all tasks sequentially.
+     * Run all HTML and JS tasks sequentially.
      */
     async run() {
-        // --- Load HTML fragments ---
-        for (const { selector, src } of this.htmlTasks) {
+        // --- Load HTML fragments sequentially ---
+        for (const { selector, src, dst } of this.htmlTasks) {
             try {
                 const html = await this.fetchText(src);
-                const target = document.querySelector(selector);
+
+                // Ensure container exists (load dst if provided)
+                const target = dst
+                    ? await this.ensureContainerLoaded(dst, selector)
+                    : document.querySelector(selector);
+
                 if (!target) {
-                    console.warn(`⚠️ Target not found: ${selector}`);
+                    console.warn(`⚠️ Target not found for selector: ${selector}`);
                     continue;
                 }
+
                 target.innerHTML = html;
                 this._executeInlineScripts(target);
             } catch (err) {
@@ -45,7 +52,7 @@ export default class LoadHTMLContainer {
         }
         this.htmlTasks = [];
 
-        // --- Load JS scripts sequentially ---
+        // --- Load external JS scripts sequentially at end of body ---
         for (const src of this.jsTasks) {
             try {
                 await this.loadScript(src);
@@ -54,6 +61,21 @@ export default class LoadHTMLContainer {
             }
         }
         this.jsTasks = [];
+    }
+
+    /**
+     * Ensure a destination container is loaded, and return target element.
+     */
+    async ensureContainerLoaded(containerSrc, selector) {
+        let target = document.querySelector(selector);
+        if (target) return target;
+
+        const html = await this.fetchText(containerSrc);
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+
+        return wrapper.querySelector(selector);
     }
 
     /**
@@ -66,33 +88,35 @@ export default class LoadHTMLContainer {
     }
 
     /**
-     * Load external JS script sequentially.
+     * Load external JS script sequentially at the end of body.
      */
     loadScript(src) {
         return new Promise((resolve, reject) => {
             const script = document.createElement("script");
             script.type = "module";
             script.src = src;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.body.appendChild(script);
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error(`Failed to load ${src}`));
+            document.body.appendChild(script); // append at end of body
         });
     }
 
     /**
-     * Execute inline <script> tags inside a container.
+     * Execute inline <script> tags inside a container at the end of body.
      */
     _executeInlineScripts(container) {
         const scripts = Array.from(container.querySelectorAll("script"));
-        scripts.forEach(oldScript => {
+        for (const oldScript of scripts) {
             const script = document.createElement("script");
+            script.type = oldScript.type || "text/javascript";
             if (oldScript.src) {
                 script.src = oldScript.src;
-                script.type = oldScript.type || "text/javascript";
+                script.type = oldScript.type || "module";
             } else {
                 script.textContent = oldScript.textContent;
             }
-            oldScript.replaceWith(script);
-        });
+            document.body.appendChild(script); // append at end of body
+            oldScript.remove();
+        }
     }
 }

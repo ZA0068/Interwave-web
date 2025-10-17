@@ -1,11 +1,18 @@
 import sessionManager from './SessionManager.js';
 
-document.addEventListener('DOMContentLoaded', function () {
-    const yearEl = document.getElementById('year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
+export default function initLoginForm() {
     const form = document.getElementById('loginForm');
     const msg = document.getElementById('loginMessage');
+        const loginPanel = document.querySelector('.login-panel');
+
+        // Hide login form if already logged in
+        fetch('/php/Login/check_session.php', { credentials: 'same-origin' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.isLoggedIn && loginPanel) {
+                    loginPanel.style.display = 'none';
+                }
+            });
     if (!form) return;
 
     form.addEventListener('submit', async function (e) {
@@ -14,9 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const submit = form.querySelector('button[type=submit]');
         submit.disabled = true;
 
-        // Send JSON payload instead of FormData
         const payload = {
-            username: form.email.value,  // or 'username' if you have that field
+            username: form.email.value,
             password: form.password.value
         };
 
@@ -25,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
-                credentials: 'same-origin' // include cookies for session
+                credentials: 'same-origin'
             });
 
             const json = await res.json();
@@ -33,8 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (res.ok && json) {
                 msg.style.color = 'green';
                 msg.textContent = json.message || 'Login successful';
-                // Update session state immediately
                 await sessionManager.refreshSessionState();
+                    // Hide login panel after successful login
+                    if (loginPanel) loginPanel.style.display = 'none';
             } else {
                 msg.style.color = 'crimson';
                 msg.textContent = json.message || 'Invalid credentials';
@@ -47,4 +54,4 @@ document.addEventListener('DOMContentLoaded', function () {
             submit.disabled = false;
         }
     });
-});
+}

@@ -1,1 +1,165 @@
-.site-header{background:linear-gradient(90deg, #41576d, #182028);color:#fff;padding:.75rem 0}.site-header .container{display:flex;align-items:center;gap:1.5rem;justify-content:space-between}.site-header .brand{margin:0;font-size:1.5rem}.site-header .main-nav{display:flex;align-items:center;gap:1.25rem}.site-header .main-nav a{color:hsla(0,0%,100%,.9);text-decoration:none;font-size:1rem;transition:color .3s ease}.site-header .main-nav a:hover{color:#fc0}.site-header .icon{width:1.6rem;height:1.6rem;min-width:1.6rem;min-height:1.6rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:#ff4d4f}.site-header .icon.active{color:#4caf50}.site-header .icon svg{width:100%;height:100%;display:block}
+.site-header {
+    background: linear-gradient(90deg, #41576d, #182028);
+    color: #fff;
+    padding: .75rem 0;
+}
+
+.site-header .container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    justify-content: space-between;
+}
+
+.site-header .brand {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.site-header .main-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.site-header .main-nav a {
+    color: hsla(0, 0%, 100%, .9);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color .3s ease;
+}
+
+.site-header .main-nav a:hover {
+    color: #fc0;
+}
+
+.site-header .icon {
+    width: 1.6rem;
+    height: 1.6rem;
+    min-width: 1.6rem;
+    min-height: 1.6rem;
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff4d4f;
+}
+
+.site-header .icon.active {
+    color: #4caf50;
+}
+
+.site-header .icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* --- Logout Dropdown --- */
+#LogOut {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+#logoutButtonContainer {
+    background: #1f2832;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    opacity: 0;
+    transform-origin: top center;
+    transform: translate(-50%, 0) scale(0.98);
+    transition: opacity .15s ease, transform .15s ease;
+    position: relative;
+    left: 50%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.icon:hover #logoutButtonContainer,
+.icon.show-logout #logoutButtonContainer {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+    pointer-events: auto;
+}
+
+.logout-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: .95rem;
+    white-space: nowrap;
+}
+
+.logout-btn:hover {
+    background: #d84335;
+}
+
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1rem;
+  transition: color 0.2s ease;
+}
+
+.main-nav a:hover {
+  color: #00bcd4;
+}
+
+/* Icon container */
+.icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Hide native checkbox */
+.logout-toggle {
+  display: none;
+}
+
+/* SVG clickable label */
+.icon-label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Log Out button (hidden by default) */
+.logout-button {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: #222;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover or focus effect */
+.icon-label:hover + .logout-button {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Keep visible when toggled */
+.logout-toggle:checked + .icon-label + .logout-button {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
