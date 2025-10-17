@@ -52,7 +52,7 @@ class SessionManager {
     }
 
     updateUIVisibility() {
-        // Hide/show login panel
+        // Hide/show login panel (legacy)
         const loginPanel = document.querySelector('.login-panel');
         if (loginPanel) {
             // Always show the panel after first session check
@@ -62,6 +62,26 @@ class SessionManager {
                 loginPanel.style.display = 'none';
             } else {
                 loginPanel.style.display = 'block';
+            }
+        }
+
+        // Hide/show auth container (new)
+        const authContainer = document.getElementById('authContainer');
+        if (authContainer) {
+            if (this.isLoggedIn) {
+                authContainer.style.display = 'none';
+            } else {
+                authContainer.style.display = 'flex';
+            }
+        }
+
+        // Hide/show hero CTA buttons when logged in
+        const heroCta = document.querySelector('.hero-cta');
+        if (heroCta) {
+            if (this.isLoggedIn) {
+                heroCta.style.display = 'none';
+            } else {
+                heroCta.style.display = 'flex';
             }
         }
 

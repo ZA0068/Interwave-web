@@ -1,0 +1,66 @@
+# Environment files (sensitive)
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database files
+*.sql
+*.db
+*.sqlite
+
+# Log files
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.swp
+*.tmp
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules (if using npm)
+node_modules/
+npm-debug.log*
+
+# Composer dependencies
+vendor/
+
+# Cache directories
+cache/
+tmp/
+
+# User uploads
+uploads/
+files/
+
+# Configuration files with sensitive data
+config.php
+database_config.php
+jwt_secret.key
+
+# Error logs
+error.log
+access.log
+
+# Temporary files
+temp/
+temporary/

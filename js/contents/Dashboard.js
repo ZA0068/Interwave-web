@@ -23,7 +23,7 @@ class Dashboard {
     async loadUserProfile() {
         try {
             // Get user info from session
-            const response = await fetch('/php/Login/check_session.php', {
+            const response = await fetch('/Session', {
                 credentials: 'same-origin'
             });
             const data = await response.json();
