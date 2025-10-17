@@ -4,13 +4,15 @@
     <div class="container">
         <h1 class="brand">Interwave</h1>
         <nav class="main-nav">
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
+            <a href="/html/contents/Index.html">Home</a>
+            <a href="/html/contents/Services.html">Services</a>
+            <a href="#" onclick="contactUs()">Contact</a>
             <a href="#" id="headerLogout" class="logout-link" style="display: none;">Logout</a>
-            <div class="icon-container">
-                <div class="icon" id="userIcon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 499 499" width="499" height="499">
+            <div class="login-container" id="loginContainer">
+                <span class="login-text" id="loginText">Log in</span>
+                <div class="icon-container">
+                    <div class="icon" id="userIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 499 499" width="499" height="499">
                         <defs>
                             <clipPath id="artboard-10855009023290080747">
                                 <rect x="0" y="0" width="500" height="500" />
@@ -64,6 +66,7 @@
                     <button id="iconLogout" class="logout-btn">Logout</button>
                 </div>
             </div>
+        </div>
         </nav>
     </div>
 </header>

@@ -42,6 +42,76 @@
     color: #ff4757 !important
 }
 
+/* Login Container Styling */
+.login-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-container:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.login-text {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Icon container within login container */
+.login-container .icon-container {
+    margin: 0;
+    position: relative;
+}
+
+.login-container .icon-container .user-icon {
+    width: 20px;
+    height: 20px;
+    fill: white;
+    transition: fill 0.2s ease;
+}
+
+.login-container:hover .user-icon {
+    fill: #e0e0e0;
+}
+
+/* When logged in, adjust styling */
+.login-container.logged-in {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: rgba(76, 175, 80, 0.4);
+}
+
+.login-container.logged-in:hover {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
+.login-container.logged-in .user-icon {
+    fill: #a8e6cf;
+}
+
+.login-container.logged-in:hover .user-icon {
+    fill: #4caf50;
+}
+
+.site-header .login-container.logged-in .login-text {
+    display: none
+}
+
+.site-header .logout-link:hover {
+    color: #ff4757 !important
+}
+
 .site-header .icon-container {
     position: relative;
     display: inline-flex;

@@ -65,6 +65,19 @@ class SessionManager {
             }
         }
 
+        // Update login container
+        const loginContainer = document.getElementById('loginContainer');
+        const loginText = document.getElementById('loginText');
+        if (loginContainer && loginText) {
+            if (this.isLoggedIn) {
+                loginContainer.classList.add('logged-in');
+                loginText.textContent = 'Dashboard';
+            } else {
+                loginContainer.classList.remove('logged-in');
+                loginText.textContent = 'Log in';
+            }
+        }
+
         // Show/hide logout elements
         const headerLogout = document.getElementById('headerLogout');
         
@@ -74,7 +87,21 @@ class SessionManager {
     }
 
     setupEventListeners() {
-        // Icon hover for dropdown
+        // Login container click handler
+        const loginContainer = document.getElementById('loginContainer');
+        if (loginContainer) {
+            loginContainer.addEventListener('click', () => {
+                if (this.isLoggedIn) {
+                    // Redirect to dashboard
+                    window.location.href = '/html/contents/Dashboard.html';
+                } else {
+                    // Redirect to login page (index)
+                    window.location.href = '/html/contents/Index.html';
+                }
+            });
+        }
+
+        // Icon hover for dropdown (when logged in)
         const iconContainer = document.querySelector('.icon-container');
         const logoutDropdown = document.getElementById('logoutDropdown');
         
