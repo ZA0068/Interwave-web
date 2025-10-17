@@ -1,7 +1,7 @@
 // Session status checker and icon manager
 class SessionManager {
-    constructor(iconSelector = '.site-header .icon') {
-        this.iconElement = document.querySelector(iconSelector);
+    constructor() {
+        this.iconElement = document.querySelector('.site-header .icon');
         this.checkInterval = 30000; // Check every 30 seconds
         this.intervalId = null;
         this.isLoggedIn = false;

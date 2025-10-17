@@ -1,94 +1,63 @@
 // LoadHTMLContainer.js
 export default class LoadHTMLContainer {
     constructor() {
-        this.tasks = [];   // HTML tasks
-        this.scripts = []; // JS scripts to load
+        this.htmlTasks = [];
+        this.jsTasks = [];
     }
 
     /**
-     * Add an HTML or JS task.
-     * @param {string|null} selector - Target CSS selector for HTML, or null for JS
-     * @param {string} src - URL of HTML or JS file
-     * @param {string|null} dst - Optional container HTML file to load first (HTML only)
+     * Add HTML fragment task.
+     * @param {string} selector - Target element selector
+     * @param {string} src - URL of HTML file
      */
-    add(selector, src, dst = null) {
-        if (typeof src !== "string") {
-            throw new Error("add() expects src as a string URL");
-        }
-
-        // JS task: selector is null or src ends with .js
-        if (!selector || src.endsWith(".js")) {
-            this.scripts.push(src);
-            return;
-        }
-
-        // HTML task
-        this.tasks.push({ selector, src, dst });
+    addHTML(selector, src) {
+        if (!selector || !src) throw new Error("addHTML requires selector and src");
+        this.htmlTasks.push({ selector, src });
     }
 
     /**
-     * Load all HTML fragments and JS scripts sequentially.
+     * Add JS script task.
+     * @param {string} src - URL of JS file
+     */
+    addJS(src) {
+        if (!src) throw new Error("addJS requires src");
+        this.jsTasks.push(src);
+    }
+
+    /**
+     * Run all tasks sequentially.
      */
     async run() {
-        // --- Load HTML ---
-        for (const task of this.tasks) {
+        // --- Load HTML fragments ---
+        for (const { selector, src } of this.htmlTasks) {
             try {
-                const html = await this.fetchText(task.src);
-
-                // Resolve target
-                let target;
-                if (task.dst && task.dst.endsWith(".html")) {
-                    target = await this.ensureContainerLoaded(task.dst, task.selector);
-                } else {
-                    target = document.querySelector(task.selector);
-                }
-
+                const html = await this.fetchText(src);
+                const target = document.querySelector(selector);
                 if (!target) {
-                    console.warn(`⚠️ Target not found for selector: ${task.selector}`);
+                    console.warn(`⚠️ Target not found: ${selector}`);
                     continue;
                 }
-
                 target.innerHTML = html;
-
-                // Execute inline <script> in loaded HTML
                 this._executeInlineScripts(target);
             } catch (err) {
-                console.error(`❌ Failed to load HTML (${task.src}):`, err);
+                console.error(`❌ Failed to load HTML (${src}):`, err);
             }
         }
-        this.tasks = [];
+        this.htmlTasks = [];
 
-        // --- Load JS scripts ---
-        for (const src of this.scripts) {
+        // --- Load JS scripts sequentially ---
+        for (const src of this.jsTasks) {
             try {
-                const js = await this.fetchText(src);
-                const scriptEl = document.createElement("script");
-                scriptEl.textContent = js;
-                document.body.appendChild(scriptEl);
+                await this.loadScript(src);
             } catch (err) {
                 console.error(`❌ Failed to load JS (${src}):`, err);
             }
         }
-        this.scripts = [];
+        this.jsTasks = [];
     }
 
     /**
-     * Ensure a container HTML file exists and return the target element.
-     */
-    async ensureContainerLoaded(containerSrc, selector) {
-        let target = document.querySelector(selector);
-        if (target) return target;
-
-        const html = await this.fetchText(containerSrc);
-        const wrapper = document.createElement("div");
-        wrapper.innerHTML = html;
-        document.body.appendChild(wrapper);
-
-        return wrapper.querySelector(selector);
-    }
-
-    /**
-     * Fetch text content from a URL.
+     * Fetch text from URL.
      */
     async fetchText(url) {
         const res = await fetch(url);
@@ -97,7 +66,21 @@ export default class LoadHTMLContainer {
     }
 
     /**
-     * Execute inline <script> tags inside a container element.
+     * Load external JS script sequentially.
+     */
+    loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.type = "module";
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+        });
+    }
+
+    /**
+     * Execute inline <script> tags inside a container.
      */
     _executeInlineScripts(container) {
         const scripts = Array.from(container.querySelectorAll("script"));
@@ -105,10 +88,11 @@ export default class LoadHTMLContainer {
             const script = document.createElement("script");
             if (oldScript.src) {
                 script.src = oldScript.src;
+                script.type = oldScript.type || "text/javascript";
             } else {
                 script.textContent = oldScript.textContent;
             }
-            oldScript.parentNode.replaceChild(script, oldScript);
+            oldScript.replaceWith(script);
         });
     }
 }
