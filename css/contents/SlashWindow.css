@@ -65,6 +65,31 @@ body {
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     --slash-offset: 100px;
+    margin-bottom: 40px;
+}
+
+.slash-window.quad {
+    --slash-offset: 80px;
+}
+
+/* Section Divider */
+.section-divider {
+    text-align: center;
+    color: white;
+    margin: 40px 0;
+    padding: 20px 0;
+}
+
+.section-divider h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.section-divider p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Image Container Base Styles */
@@ -287,5 +312,171 @@ body {
         flex: 0.5;
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
         margin-bottom: calc(-1 * var(--slash-offset));
+    }
+}
+
+/* Quad Slash Window Styles */
+.slash-window.quad .image-container {
+    flex: 1;
+}
+
+/* Quad Left Container - Trapezoid (right-pointing cut) */
+.quad-left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+    z-index: 4;
+}
+
+/* Quad Middle Left Container - Parallelogram (left-pointing cut) */
+.quad-middle-left-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 3;
+}
+
+/* Quad Middle Right Container - Parallelogram (right-pointing cut) */
+.quad-middle-right-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 2;
+}
+
+/* Quad Right Container - Trapezoid (left-pointing cut) */
+.quad-right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 1;
+}
+
+/* Quad Hover Effects */
+.quad-left-container:hover {
+    flex: 2;
+}
+
+.quad-left-container:hover ~ .quad-middle-left-container {
+    flex: 0.75;
+}
+
+.quad-left-container:hover ~ .quad-middle-right-container {
+    flex: 0.75;
+}
+
+.quad-left-container:hover ~ .quad-right-container {
+    flex: 0.5;
+}
+
+.quad-middle-left-container:hover {
+    flex: 2;
+}
+
+.quad-middle-left-container:hover ~ .quad-middle-right-container {
+    flex: 0.75;
+}
+
+.quad-middle-left-container:hover ~ .quad-right-container {
+    flex: 0.5;
+}
+
+.slash-window.quad:has(.quad-middle-left-container:hover) .quad-left-container {
+    flex: 0.75;
+}
+
+.quad-middle-right-container:hover {
+    flex: 2;
+}
+
+.quad-middle-right-container:hover ~ .quad-right-container {
+    flex: 0.5;
+}
+
+.slash-window.quad:has(.quad-middle-right-container:hover) .quad-left-container {
+    flex: 0.75;
+}
+
+.slash-window.quad:has(.quad-middle-right-container:hover) .quad-middle-left-container {
+    flex: 0.75;
+}
+
+.quad-right-container:hover {
+    flex: 2;
+}
+
+.slash-window.quad:has(.quad-right-container:hover) .quad-left-container {
+    flex: 0.5;
+}
+
+.slash-window.quad:has(.quad-right-container:hover) .quad-middle-left-container {
+    flex: 0.75;
+}
+
+.slash-window.quad:has(.quad-right-container:hover) .quad-middle-right-container {
+    flex: 0.75;
+}
+
+/* Quad Responsive Styles */
+@media (max-width: 768px) {
+    .slash-window.quad {
+        --slash-offset: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slash-window.quad {
+        height: 600px;
+        flex-direction: column;
+        --slash-offset: 30px;
+    }
+
+    .slash-window.quad .image-container {
+        flex: 1;
+        height: 25%;
+    }
+
+    .quad-left-container {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-bottom: calc(-1 * var(--slash-offset));
+        margin-left: 0;
+    }
+
+    .quad-middle-left-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-left: 0;
+        margin-bottom: calc(-1 * var(--slash-offset));
+    }
+
+    .quad-middle-right-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-left: 0;
+        margin-bottom: calc(-1 * var(--slash-offset));
+    }
+
+    .quad-right-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% 100%, 0 100%);
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+
+    .quad-left-container:hover,
+    .quad-middle-left-container:hover,
+    .quad-middle-right-container:hover,
+    .quad-right-container:hover {
+        flex: 1.5;
+    }
+
+    .quad-left-container:hover ~ .quad-middle-left-container,
+    .quad-left-container:hover ~ .quad-middle-right-container,
+    .quad-left-container:hover ~ .quad-right-container,
+    .quad-middle-left-container:hover ~ .quad-middle-right-container,
+    .quad-middle-left-container:hover ~ .quad-right-container,
+    .quad-middle-right-container:hover ~ .quad-right-container {
+        flex: 0.83;
+    }
+
+    .slash-window.quad:has(.quad-middle-left-container:hover) .quad-left-container,
+    .slash-window.quad:has(.quad-middle-right-container:hover) .quad-left-container,
+    .slash-window.quad:has(.quad-middle-right-container:hover) .quad-middle-left-container,
+    .slash-window.quad:has(.quad-right-container:hover) .quad-left-container,
+    .slash-window.quad:has(.quad-right-container:hover) .quad-middle-left-container,
+    .slash-window.quad:has(.quad-right-container:hover) .quad-middle-right-container {
+        flex: 0.83;
     }
 }
