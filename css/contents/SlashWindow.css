@@ -72,6 +72,14 @@ body {
     --slash-offset: 80px;
 }
 
+.slash-window.triple {
+    --slash-offset: 90px;
+}
+
+.slash-window.penta {
+    --slash-offset: 70px;
+}
+
 /* Section Divider */
 .section-divider {
     text-align: center;
@@ -320,9 +328,9 @@ body {
     flex: 1;
 }
 
-/* Quad Left Container - Trapezoid (right-pointing cut) */
+/* Quad Left Container - Trapezoid (left-pointing cut to match parallelograms) */
 .quad-left-container {
-    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
     z-index: 4;
 }
 
@@ -333,16 +341,16 @@ body {
     z-index: 3;
 }
 
-/* Quad Middle Right Container - Parallelogram (right-pointing cut) */
+/* Quad Middle Right Container - Parallelogram (left-pointing cut) */
 .quad-middle-right-container {
     clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
     margin-left: calc(-1 * var(--slash-offset));
     z-index: 2;
 }
 
-/* Quad Right Container - Trapezoid (left-pointing cut) */
+/* Quad Right Container - Trapezoid (left-pointing cut to match parallelograms) */
 .quad-right-container {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
     margin-left: calc(-1 * var(--slash-offset));
     z-index: 1;
 }
@@ -373,7 +381,7 @@ body {
 }
 
 .quad-middle-left-container:hover ~ .quad-right-container {
-    flex: 0.5;
+    flex: 0.75;
 }
 
 .slash-window.quad:has(.quad-middle-left-container:hover) .quad-left-container {
@@ -385,7 +393,7 @@ body {
 }
 
 .quad-middle-right-container:hover ~ .quad-right-container {
-    flex: 0.5;
+    flex: 0.75;
 }
 
 .slash-window.quad:has(.quad-middle-right-container:hover) .quad-left-container {
@@ -478,5 +486,335 @@ body {
     .slash-window.quad:has(.quad-right-container:hover) .quad-middle-left-container,
     .slash-window.quad:has(.quad-right-container:hover) .quad-middle-right-container {
         flex: 0.83;
+    }
+}
+
+/* Triple Slash Window Styles */
+.slash-window.triple .image-container {
+    flex: 1;
+}
+
+/* Triple Left Container - Trapezoid */
+.triple-left-container {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    z-index: 3;
+}
+
+/* Triple Middle Container - Parallelogram */
+.triple-middle-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 2;
+}
+
+/* Triple Right Container - Trapezoid */
+.triple-right-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 1;
+}
+
+/* Triple Hover Effects */
+.triple-left-container:hover {
+    flex: 2;
+}
+
+.triple-left-container:hover ~ .triple-middle-container {
+    flex: 0.75;
+}
+
+.triple-left-container:hover ~ .triple-right-container {
+    flex: 0.75;
+}
+
+.triple-middle-container:hover {
+    flex: 2;
+}
+
+.triple-middle-container:hover ~ .triple-right-container {
+    flex: 0.75;
+}
+
+.slash-window.triple:has(.triple-middle-container:hover) .triple-left-container {
+    flex: 0.75;
+}
+
+.triple-right-container:hover {
+    flex: 2;
+}
+
+.slash-window.triple:has(.triple-right-container:hover) .triple-left-container {
+    flex: 0.75;
+}
+
+.slash-window.triple:has(.triple-right-container:hover) .triple-middle-container {
+    flex: 0.75;
+}
+
+/* Penta Slash Window Styles */
+.slash-window.penta .image-container {
+    flex: 1;
+}
+
+/* Penta Left Container - Trapezoid */
+.penta-left-container {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    z-index: 5;
+}
+
+/* Penta Middle Left Container - Parallelogram */
+.penta-middle-left-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 4;
+}
+
+/* Penta Center Container - Parallelogram */
+.penta-center-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 3;
+}
+
+/* Penta Middle Right Container - Parallelogram */
+.penta-middle-right-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 2;
+}
+
+/* Penta Right Container - Trapezoid */
+.penta-right-container {
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
+    margin-left: calc(-1 * var(--slash-offset));
+    z-index: 1;
+}
+
+/* Penta Hover Effects */
+.penta-left-container:hover {
+    flex: 2.5;
+}
+
+.penta-left-container:hover ~ .penta-middle-left-container {
+    flex: 0.7;
+}
+
+.penta-left-container:hover ~ .penta-center-container {
+    flex: 0.6;
+}
+
+.penta-left-container:hover ~ .penta-middle-right-container {
+    flex: 0.6;
+}
+
+.penta-left-container:hover ~ .penta-right-container {
+    flex: 0.5;
+}
+
+.penta-middle-left-container:hover {
+    flex: 2.5;
+}
+
+.penta-middle-left-container:hover ~ .penta-center-container {
+    flex: 0.7;
+}
+
+.penta-middle-left-container:hover ~ .penta-middle-right-container {
+    flex: 0.6;
+}
+
+.penta-middle-left-container:hover ~ .penta-right-container {
+    flex: 0.6;
+}
+
+.slash-window.penta:has(.penta-middle-left-container:hover) .penta-left-container {
+    flex: 0.7;
+}
+
+.penta-center-container:hover {
+    flex: 2.5;
+}
+
+.penta-center-container:hover ~ .penta-middle-right-container {
+    flex: 0.7;
+}
+
+.penta-center-container:hover ~ .penta-right-container {
+    flex: 0.7;
+}
+
+.slash-window.penta:has(.penta-center-container:hover) .penta-left-container {
+    flex: 0.7;
+}
+
+.slash-window.penta:has(.penta-center-container:hover) .penta-middle-left-container {
+    flex: 0.7;
+}
+
+.penta-middle-right-container:hover {
+    flex: 2.5;
+}
+
+.penta-middle-right-container:hover ~ .penta-right-container {
+    flex: 0.7;
+}
+
+.slash-window.penta:has(.penta-middle-right-container:hover) .penta-left-container {
+    flex: 0.6;
+}
+
+.slash-window.penta:has(.penta-middle-right-container:hover) .penta-middle-left-container {
+    flex: 0.6;
+}
+
+.slash-window.penta:has(.penta-middle-right-container:hover) .penta-center-container {
+    flex: 0.7;
+}
+
+.penta-right-container:hover {
+    flex: 2.5;
+}
+
+.slash-window.penta:has(.penta-right-container:hover) .penta-left-container {
+    flex: 0.5;
+}
+
+.slash-window.penta:has(.penta-right-container:hover) .penta-middle-left-container {
+    flex: 0.6;
+}
+
+.slash-window.penta:has(.penta-right-container:hover) .penta-center-container {
+    flex: 0.6;
+}
+
+.slash-window.penta:has(.penta-right-container:hover) .penta-middle-right-container {
+    flex: 0.7;
+}
+
+/* Additional Responsive Styles for Triple and Penta */
+@media (max-width: 768px) {
+    .slash-window.triple {
+        --slash-offset: 60px;
+    }
+    
+    .slash-window.penta {
+        --slash-offset: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slash-window.triple {
+        height: 450px;
+        flex-direction: column;
+        --slash-offset: 25px;
+    }
+
+    .slash-window.triple .image-container {
+        flex: 1;
+        height: 33.33%;
+    }
+
+    .triple-left-container {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-bottom: calc(-1 * var(--slash-offset));
+        margin-left: 0;
+    }
+
+    .triple-middle-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-left: 0;
+        margin-bottom: calc(-1 * var(--slash-offset));
+    }
+
+    .triple-right-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% 100%, 0 100%);
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+
+    .slash-window.penta {
+        height: 750px;
+        flex-direction: column;
+        --slash-offset: 20px;
+    }
+
+    .slash-window.penta .image-container {
+        flex: 1;
+        height: 20%;
+    }
+
+    .penta-left-container {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-bottom: calc(-1 * var(--slash-offset));
+        margin-left: 0;
+    }
+
+    .penta-middle-left-container,
+    .penta-center-container,
+    .penta-middle-right-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        margin-left: 0;
+        margin-bottom: calc(-1 * var(--slash-offset));
+    }
+
+    .penta-right-container {
+        clip-path: polygon(0 var(--slash-offset), 100% 0, 100% 100%, 0 100%);
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+
+    .triple-left-container:hover,
+    .triple-middle-container:hover,
+    .triple-right-container:hover {
+        flex: 1.5;
+    }
+
+    .triple-left-container:hover ~ .triple-middle-container,
+    .triple-left-container:hover ~ .triple-right-container,
+    .triple-middle-container:hover ~ .triple-right-container {
+        flex: 0.75;
+    }
+
+    .slash-window.triple:has(.triple-middle-container:hover) .triple-left-container,
+    .slash-window.triple:has(.triple-right-container:hover) .triple-left-container,
+    .slash-window.triple:has(.triple-right-container:hover) .triple-middle-container {
+        flex: 0.75;
+    }
+
+    .penta-left-container:hover,
+    .penta-middle-left-container:hover,
+    .penta-center-container:hover,
+    .penta-middle-right-container:hover,
+    .penta-right-container:hover {
+        flex: 1.5;
+    }
+
+    .penta-left-container:hover ~ .penta-middle-left-container,
+    .penta-left-container:hover ~ .penta-center-container,
+    .penta-left-container:hover ~ .penta-middle-right-container,
+    .penta-left-container:hover ~ .penta-right-container {
+        flex: 0.875;
+    }
+
+    .penta-middle-left-container:hover ~ .penta-center-container,
+    .penta-middle-left-container:hover ~ .penta-middle-right-container,
+    .penta-middle-left-container:hover ~ .penta-right-container,
+    .penta-center-container:hover ~ .penta-middle-right-container,
+    .penta-center-container:hover ~ .penta-right-container,
+    .penta-middle-right-container:hover ~ .penta-right-container {
+        flex: 0.875;
+    }
+
+    .slash-window.penta:has(.penta-middle-left-container:hover) .penta-left-container,
+    .slash-window.penta:has(.penta-center-container:hover) .penta-left-container,
+    .slash-window.penta:has(.penta-center-container:hover) .penta-middle-left-container,
+    .slash-window.penta:has(.penta-middle-right-container:hover) .penta-left-container,
+    .slash-window.penta:has(.penta-middle-right-container:hover) .penta-middle-left-container,
+    .slash-window.penta:has(.penta-middle-right-container:hover) .penta-center-container,
+    .slash-window.penta:has(.penta-right-container:hover) .penta-left-container,
+    .slash-window.penta:has(.penta-right-container:hover) .penta-middle-left-container,
+    .slash-window.penta:has(.penta-right-container:hover) .penta-center-container,
+    .slash-window.penta:has(.penta-right-container:hover) .penta-middle-right-container {
+        flex: 0.875;
     }
 }
