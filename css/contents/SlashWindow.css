@@ -55,6 +55,31 @@ body {
     opacity: 0.8;
 }
 
+/* Control Buttons */
+.controls {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.control-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #5b5ff8, #8b5cf6);
+}
+
 /* Main Slash Window Container */
 .slash-window {
     position: relative;
@@ -78,6 +103,74 @@ body {
 
 .slash-window.penta {
     --slash-offset: 70px;
+}
+
+/* Reverse Direction Styles */
+.slash-window.reverse .left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+}
+
+.slash-window.reverse .right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+.slash-window.reverse .triple-left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+}
+
+.slash-window.reverse .triple-middle-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, var(--slash-offset) 100%, 0 100%);
+}
+
+.slash-window.reverse .triple-right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+.slash-window.reverse .quad-left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+}
+
+.slash-window.reverse .quad-middle-left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, var(--slash-offset) 100%, 0 100%);
+}
+
+.slash-window.reverse .quad-middle-right-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, var(--slash-offset) 100%, 0 100%);
+}
+
+.slash-window.reverse .quad-right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+.slash-window.reverse .penta-left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+}
+
+.slash-window.reverse .penta-middle-left-container,
+.slash-window.reverse .penta-center-container,
+.slash-window.reverse .penta-middle-right-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, var(--slash-offset) 100%, 0 100%);
+}
+
+.slash-window.reverse .penta-right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+/* Reverse Direction Hover Effects */
+.slash-window.reverse .left-container:hover {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+}
+
+.slash-window.reverse .left-container:hover+.right-container {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+.slash-window.reverse .right-container:hover {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+}
+
+.slash-window.reverse:has(.right-container:hover) .left-container {
+    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
 }
 
 /* Section Divider */
@@ -113,12 +206,12 @@ body {
 }
 
 .left-container {
-    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
     z-index: 2;
 }
 
 .right-container {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
     margin-left: calc(-1 * var(--slash-offset));
     z-index: 1;
 }
@@ -171,25 +264,29 @@ body {
 
 /* Hover Effects - Pixel Perfect Trapezoid Growth */
 .left-container:hover {
-    flex: 2.5;
-    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+    flex: 2;
+    /* Keep the same clip-path as normal left-container */
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
 }
 
 .left-container:hover+.right-container {
     flex: 0.5;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+    /* Keep the same clip-path as normal right-container */
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
     margin-left: calc(-1 * var(--slash-offset));
 }
 
 .right-container:hover {
-    flex: 2.5;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+    flex: 2;
+    /* Keep the same clip-path as normal right-container */
+    clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
     margin-left: calc(-1 * var(--slash-offset));
 }
 
 .slash-window:has(.right-container:hover) .left-container {
     flex: 0.5;
-    clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+    /* Keep the same clip-path as normal left-container */
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
 }
 
 /* Image and Overlay Hover Effects */
@@ -242,25 +339,25 @@ body {
     }
 
     .left-container:hover {
-        flex: 2.5;
-        clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+        flex: 2;
+        clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
     }
 
     .left-container:hover+.right-container {
         flex: 0.5;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+        clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
         margin-left: calc(-1 * var(--slash-offset));
     }
 
     .right-container:hover {
-        flex: 2.5;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slash-offset) 100%);
+        flex: 2;
+        clip-path: polygon(var(--slash-offset) 0, 100% 0, 100% 100%, 0 100%);
         margin-left: calc(-1 * var(--slash-offset));
     }
 
     .slash-window:has(.right-container:hover) .left-container {
         flex: 0.5;
-        clip-path: polygon(0 0, calc(100% - var(--slash-offset)) 0, 100% 100%, 0 100%);
+        clip-path: polygon(0 0, 100% 0, calc(100% - var(--slash-offset)) 100%, 0 100%);
     }
 
     .overlay {
@@ -301,8 +398,8 @@ body {
     }
 
     .left-container:hover {
-        flex: 2.5;
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        flex: 2;
+        clip-path: polygon(0 0, 100% var(--slash-offset), 100% 100%, 0 calc(100% - var(--slash-offset)));
         margin-bottom: calc(-1 * var(--slash-offset));
     }
 
@@ -312,13 +409,13 @@ body {
     }
 
     .right-container:hover {
-        flex: 2.5;
+        flex: 2;
         clip-path: polygon(0 var(--slash-offset), 100% 0, 100% 100%, 0 100%);
     }
 
     .slash-window:has(.right-container:hover) .left-container {
         flex: 0.5;
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slash-offset)), 0 100%);
+        clip-path: polygon(0 0, 100% var(--slash-offset), 100% 100%, 0 calc(100% - var(--slash-offset)));
         margin-bottom: calc(-1 * var(--slash-offset));
     }
 }
