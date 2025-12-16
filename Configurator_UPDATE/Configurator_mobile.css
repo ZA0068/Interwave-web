@@ -139,7 +139,6 @@
     }
 
     .grid-cells {
-        gap: 0.75rem !important;
         justify-content: center !important;
     }
 

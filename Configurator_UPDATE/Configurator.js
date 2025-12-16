@@ -400,7 +400,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(1);
+        this.#unlockStep(this.current_step + 1);
     }
 
 
@@ -432,7 +432,7 @@ export class Configurator {
         this.#deactivateAnyButton('Essential', null);
         this.#deactivateAnyButton('Ideal', null);
         this.#showSelectedImage();
-        this.#unlockStep(8);
+        this.#unlockStep(this.current_step + 1);
         this.#lockPanel('selection-panel', 'Robot', 'step-10');
         this.#unlockPanel('selection-panel', 'Tools', 'step-10');
 
@@ -454,7 +454,7 @@ export class Configurator {
     }
 
     #unlockProgram() {
-        this.#unlockStep(10);
+        this.#unlockStep(this.current_step + 1);
         this.#unlockPanel('selection-panel', 'Robot', 'step-10');
         this.#unlockPanel('sub-panel', 'Subscription', 'step-10');
         this.#clickAnyButton("Software", "Subscription", "step-10");
@@ -486,7 +486,7 @@ export class Configurator {
         } finally {
             this.pop_up_handled = true;
             this.#hideHeaderContainer();
-            this.#unlockStep(2);
+        this.#unlockStep(this.current_step + 1);
             this.#showBodyContainer();
 
         }
@@ -501,7 +501,7 @@ export class Configurator {
         } finally {
             this.pop_up_handled = true;
             this.#hideHeaderContainer();
-            this.#unlockStep(2);
+        this.#unlockStep(this.current_step + 1);
             this.#showBodyContainer();
         }
     }
@@ -544,7 +544,7 @@ export class Configurator {
             default:
                 break;
         }
-        if (!this.notEventBasedButton) this.#unlockStep(4);
+        if (!this.notEventBasedButton) this.#unlockStep(this.current_step + 1);
     }
 
     #handleConfigurationScope() {
@@ -590,8 +590,8 @@ export class Configurator {
                 break;
         }
         if (!this.notEventBasedButton) {
-            this.#unlockStep(5);
-            this.#unlockStep(6);
+            this.#unlockStep(this.current_step + 1);
+            this.#unlockStep(this.current_step + 2);
         }
     }
 
@@ -609,7 +609,7 @@ export class Configurator {
             default:
                 break;
         }
-        if (!this.notEventBasedButton) this.#unlockStep(6);
+        if (!this.notEventBasedButton) this.#unlockStep(this.current_step + 1);
     }
 
     handleStep6() {
@@ -643,7 +643,7 @@ export class Configurator {
         }
         if (!this.notEventBasedButton) {
             this.show_Tools_Only = false;
-            this.#unlockStep(7);
+            this.#unlockStep(this.current_step + 1);
         }
     }
 
@@ -665,7 +665,7 @@ export class Configurator {
                 break;
         }
         if (!this.notEventBasedButton) {
-            this.#unlockStep(8);
+            this.#unlockStep(this.current_step + 1);
         }
     }
 
@@ -729,7 +729,7 @@ export class Configurator {
                 this.#handleReDresser();
                 break;
             case "Re-Dresser-Variants":
-                this.#handleReDresserType();
+                this.#handleReDresserVariants();
                 break;
             case "Re-Dresser-Color":
                 this.#handleReDresserColor();
@@ -740,7 +740,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(9);
+        this.#unlockStep(this.current_step + 1);
     }
 
     #handleSubscriptionClassReDresser() {
@@ -907,7 +907,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(10);
+        this.#unlockStep(this.current_step + 1);
     }
 
     handleStep10() {
@@ -945,7 +945,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(10);
+        this.#unlockStep(this.current_step + 1);
     }
 
     handleStep11() {
@@ -1856,9 +1856,7 @@ export class Configurator {
         this.setProductHeaderWiithBitIndex({ "Branch": this.selectors.Branch[0] }, this.selectors.Branch[1], "Branch");
         this.#clickAnyButton(this.data_button, 'Color', 'step-4');
         this.#clickAnyButton(variant, 'Branch-Variants', "step-4");
-        this.#unlockStep(3);
-        this.#unlockStep(4);
-        this.#unlockStep(5);
+        this.#unlockStepsUpTo(this.current_step + 3);
     }
 
 
@@ -1873,7 +1871,7 @@ export class Configurator {
         }
     }
 
-    #handleReDresserType() {
+    #handleReDresserVariants() {
         this.#selectExclusive();
         this.#updateInfoText();
         this.setSelectors();
@@ -1888,7 +1886,7 @@ export class Configurator {
         this.#lockPanel("sub-panel", "Re-Dresser-Color");
         this.setProductHeader({ "Tools": { "Re-Dresser": false } }, 0);
         this.#lockPanel("selection-panel", 'Tools', 'step-10');
-        this.#unlockStep(10);
+        this.#unlockStep(this.current_step + 1);
     }
 
     #unlockReDresserProperties() {
@@ -1910,22 +1908,11 @@ export class Configurator {
         this.setSelectorsExt(this.sub_panel.id, this.data_button, this.button_index + 1, 0);
         this.setProductToolFeatures("Re-Dresser™", "Property", this.sub_panel.id, this.sub_panel.id);
         this.#handleTableCols(this.sub_panel.id);
-        switch (this.data_button) {
-            case "Excellent":
-            case "Basis":
-            case "Standard":
-                this.setProductBitValue(this.bitindexes["Re-Dresser-Properties-" + this.data_button][0], 0, this.bitindexes["Re-Dresser-Properties-" + this.data_button][1]);
-                break;
-            default:
-                break;
-        }
-
-
+        this.setProductBitValue(this.bitindexes["Re-Dresser-Properties-" + this.data_button][0], 0, this.bitindexes["Re-Dresser-Properties-" + this.data_button][1]);
         if (this.cell.classList.contains("open-close-button")) {
             this.#handlePopupTable();
         }
-
-        this.#unlockStep(7);
+        this.#unlockStep(this.current_step + 1);
     }
 
     #handlePopupTable() {
