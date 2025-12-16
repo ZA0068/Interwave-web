@@ -1,0 +1,101 @@
+/* LEFT: Image panel container – begrænset til sin flex-kolonne */
+.image-panel-container {
+    flex: 3 1 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-right: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    position: relative;
+    height: auto; /* ikke låst 40rem */
+    animation: fadeIn 1s;
+    background-color: transparent;
+    box-shadow: none;
+    transition: background-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* Hero følger containerens bredde 1:1 */
+.image-panel-hero-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+.image-panel-hero {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+
+    overflow: hidden; /* sikrer intet overflow */
+}
+
+/* baggrundsvarianter */
+.image-panel-hero.agro-bg[data-image-group=Robot] {
+    background-color: var(--engbakken-color);
+    box-shadow: 0 0 8px 2px black;
+    border-radius: 2rem;
+}
+
+.image-panel-hero.defender-bg[data-image-group=Robot] {
+    background-color: darkolivegreen;
+    box-shadow: 0 0 8px 2px black;
+    border-radius: 2rem;
+}
+
+/* Hero-billeder – responsiv højde */
+.images {
+    --image-height: 25rem;
+    width: 100%;
+    max-width: 100%;
+    height: auto; /* lad billedet styre højden */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.images .content-image {
+    display: none;
+    opacity: 0;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: var(--image-height);
+
+    border-radius: 12px;
+    object-fit: contain;
+    object-position: center;
+    transition: opacity 1s ease-in-out;
+}
+
+.image-panel-hero[data-image-group=Robot] .images .content-image {
+    margin-top: 1rem;
+}
+
+.content-image.active {
+    display: block;
+    opacity: 1;
+}
+
+.image-panel-hero .image-caption {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: clamp(1rem, 0.8rem + 1.5vw, 2.4rem);
+    font-weight: bold;
+    text-align: left;
+    text-indent: 1rem;
+    padding: 0.5rem 1rem;
+    padding-right: 4rem;
+    z-index: 10;
+    color: white;
+    background-color: var(--engbakken-trans);
+    clip-path: polygon(0% 0%, 96% 0, 100% 100%, 0 100%);
+}
