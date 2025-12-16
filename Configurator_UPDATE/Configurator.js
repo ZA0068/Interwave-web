@@ -135,15 +135,17 @@ export class Configurator {
             "Vision-Based-Basis": [0, 23],
             "Vision-Based-Standard": [1, 22],
             "Vision-Based-Excellent": [1, 0],
-            "Subscription-Re-Dresser": [0, 1],
-            "Vision-Based-Re-Dresser": [0, 2],
-            "Vision-Based-Re-Dresser-Properties-Basis": [0, 1],
-            "Vision-Based-Re-Dresser-Properties-Standard": [1, 2],
-            "Vision-Based-Re-Dresser-Properties-Excellent": [1, 0],
-            "Tool-Control": [0, 2],
-            "Tool-Control-Variant-Basis": [0, 0],
-            "Tool-Control-Variant-Standard": [1, 1],
-            "Tool-Control-Variant-Excellent": [1, 0],
+            "Subscription-Tools": [0, 2],
+            "Software-Tools": [0, 2],
+            "Service-Tools": [0, 2],
+            "Vision-Based-Tools": [0, 2],
+            "Vision-Based-Properties-Basis-Tools": [0, 1],
+            "Vision-Based-Properties-Standard-Tools": [1, 2],
+            "Vision-Based-Properties-Excellent-Tools": [1, 0],
+            "Tool-Control-Tools": [0, 2],
+            "Tool-Control-Basis-Tools": [0, 0],
+            "Tool-Control-Standard-Tools": [1, 1],
+            "Tool-Control-Excellent-Tools": [1, 0],
         };
 
         this.bitindexes = {};
@@ -217,12 +219,11 @@ export class Configurator {
             "Re-Dresser": [null, 0],
             "Re-Dresser-Variants": ["Re-Dresser-2.5", 0],
             "Re-Dresser-Color": [null, 0],
-            "Re-Dresser-Properties": ["Basis", 0, 0],
+            "Re-Dresser-Properties": ["Basis", 1, 0],
+            Acquire: [null, 0],
+            "Innovation-Partner": ["✔", 1],
             "Vision-Based": ["Basis", 1, 0],
             "Sky-Vision": [null, 0],
-            "Vision-Based-Re-Dresser": ["Basis", 1],
-            "Vision-Based-Re-Dresser-Properties": [null, 0],
-            "Subscription-Re-Dresser": [null, 0],
             "Subscription": [false, false],
             Software: [0, 0, false, false, false],
             Service: ["Bronze", 0],
@@ -230,12 +231,13 @@ export class Configurator {
             "On-Site-Operators": 0,
             "Re-Bot-UGV": 0,
             "Sky-Vision-UAV": 0,
-            "Software-Re-Dresser": [null, 1],
-            "Service-Re-Dresser": [null, 2],
-            Acquire: [null, 0],
-            "Innovation-Partner": ["✔", 1],
-            "Tool-Control": ["Basis", 1],
-            "Tool-Control-Variant": [null, 0],
+            "Subscription-Tools": [false, false],
+            "Software-Tools": [0, 0, false, false, false],
+            "Service-Tools": ["Bronze", 0],
+            "Vision-Based-Tools": ["Basis", 1, 0],
+            "Vision-Based-Properties-Tools": [null, 0],
+            "Tool-Control-Tools": ["Basis", 1],
+            "Tool-Control-Properties-Tools": [null, 0],
             "Draw-Bar-Re-Dresser": ["✘", null],
             "Re-Axle-Re-Dresser": ["✘", null],
         };
@@ -743,7 +745,8 @@ export class Configurator {
         this.#unlockStep(this.current_step + 1);
     }
 
-    #handleSubscriptionClassReDresser() {
+    #handleSoftwareTools() {
+        this.#HandleVisionBasedTools();
         this.#selectExclusive();
         this.#updateInfoText();
         this.setSelectors("Subscription-Re-Dresser");
@@ -751,7 +754,7 @@ export class Configurator {
         this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Re-Dresser": { "Technical service": this.selectors["Subscription-Re-Dresser"][0] } } }, this.bitindexes["Subscription-Re-Dresser"][0], this.selectors["Subscription-Re-Dresser"][1], this.bitindexes["Subscription-Re-Dresser"][1]);
     }
 
-    #handleSubscriptionClass() {
+    #handleService() {
         this.setSelectors("Service");
         this.#selectExclusive();
         this.#updateInfoText();
@@ -759,7 +762,7 @@ export class Configurator {
         // this.setProduct("Service", { "Re-Bot": { Subscription: this.data_button } }, this.bitindexes["Service"][0], this.button_index, this.bitindexes["Service"][1]);
     }
 
-    #handleVisionBasedReDresserVariant() {
+    #handleVisionBasedPropertiesTools() {
         this.setSelectors("Vision-Based-Re-Dresser", this.data_button, this.button_index + 1);
         this.#selectExclusive();
         this.#updateInfoText();
@@ -782,7 +785,7 @@ export class Configurator {
         }
     }
 
-    #HandleVisionBasedReDresser() {
+    #HandleVisionBasedTools() {
         const state = this.#toggleSelector(this.data_button);
         this.#toggleButton();
         this.#toggleInfoText(this.data_button);
@@ -916,7 +919,7 @@ export class Configurator {
                 this.#handleSubscription();
                 break;
             case "Service":
-                this.#handleSubscriptionClass();
+                this.#handleService();
                 break;
             case "Software":
                 this.#handleSoftware();
@@ -924,28 +927,52 @@ export class Configurator {
             case "Vision-Based":
                 this.#handleVisionBased();
                 break;
-            case "Subscription-Class-Re-Dresser":
-                this.#handleSubscriptionClassReDresser();
+            case "Subscription-Tools":
+                this.#handleSubscriptionTools();
                 break;
-            case "Subscription-Type-Re-Dresser":
-                this.#handleSubscriptionTypeReDresser();
+            case "Service-Tools":
+                this.#handleServiceTools();
                 break;
-            case "Vision-Based-Re-Dresser":
-                this.#HandleVisionBasedReDresser();
+            case "Software-Tools":
+                this.#handleSoftwareTools();
                 break;
-            case "Vision-Based-Re-Dresser-Properties":
-                this.#handleVisionBasedReDresserVariant();
+            case "Vision-Based-Properties-Tools":
+                this.#handleVisionBasedPropertiesTools();
                 break;
-            case "Tool-Control":
+            case "Tool-Control-Tools":
                 this.#HandleToolControl();
                 break;
-            case "Tool-Control-Variant":
+            case "Tool-Control-Properties-Tools":
                 this.#handleToolControlVariant();
                 break;
             default:
                 break;
         }
         this.#unlockStep(this.current_step + 1);
+    }
+
+    #handleSubscriptionTools() {
+        switch (this.data_button) {
+            case "Service-Tools":
+                this.#toggleButton("Subscription-Tools", 0);
+                this.#togglePanel("sub-panel", "Service-Tools", "step-10", this.selectors["Subscription-Tools"][0]);
+                this.#clickAnyButton(this.selectors["Service-Tools"][0], "Service-Tools");
+                break;
+            case "Software-Tools":
+                this.#toggleButton("Subscription-Tools", 1);
+                this.#togglePanel("sub-panel", "Software-Tools", "step-10", this.selectors["Subscription-Tools"][1]);
+
+                // if (this.selectors.Subscription[1] && !this._subscriptionInputsInit) {
+                //     this.#initSubscriptionNumberInputs();
+                //     this._subscriptionInputsInit = true;
+                // }
+                break;
+            default:
+                return;
+        }
+
+        this.handeleSubscriptionText(this.selectors["Subscription-Tools"][0], this.selectors["Subscription-Tools"][1]);
+        this.setProduct("Tools", { "Subscription": { "Mac-Mapp": "✔" } }, null, 0, null);
     }
 
     handleStep11() {
@@ -977,49 +1004,23 @@ export class Configurator {
     //     return;
     // }
 
-    #handleSubscriptionTypeReDresser() {
-        switch (this.data_button) {
-            case "Software":
-                this.#toggleButton("Software-Re-Dresser");
-                this.#togglePanel("sub-panel", "Mac-Mapp-Re-Dresser");
-                this.#togglePanel("sub-panel", "Vision-Based-Re-Dresser");
-                break;
-            case "Service":
-                this.#toggleButton("Service-Re-Dresser");
-                this.#togglePanel("sub-panel", "Subscription-Class-Re-Dresser");
-                break;
-            default:
-                return;
-        }
+    #handleServiceTools() {
+        this.setSelectors("Service-Tools");
+        this.#selectExclusive();
+        this.#updateInfoText();
+        this.setProductTools("Subscription", 3,"Service-Tools", "Service-Tools", "Service-Tools")
+        // this.setProductRobotSubscription("Service-Tools", "Service-Tools", "Service-Tools")
 
-        // Determine current toggle states
-        const softwareOn = this.selectors["Software-Re-Dresser"][1];
-        const serviceOn = this.selectors["Service-Re-Dresser"][1];
-
-        // Reset all info texts
-        this.#disableInfoText("Software");
-        this.#disableInfoText("Service");
-        this.#disableInfoText("Both");
-
-        // Apply correct visibility
-        if (softwareOn && serviceOn) {
-            this.#enableInfoText("Both");
-        } else if (softwareOn) {
-            this.#enableInfoText("Software");
-        } else if (serviceOn) {
-            this.#enableInfoText("Service");
-        }
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Re-Dresser": { "Mac-Mapp": "✔" } } }, null, 0, null);
-
+        // this.setProduct("Service", { "Re-Bot": { Subscription: this.data_button } }, this.bitindexes["Service"][0], this.button_index, this.bitindexes["Service"][1]);
     }
 
-    #unlockContactForm() {
-        this.current_step.querySelector(".contact-form-container").classList.remove("hide");
-    }
+    // #unlockContactForm() {
+    //     this.current_step.querySelector(".contact-form-container").classList.remove("hide");
+    // }
 
-    #lockContactForm() {
-        this.current_step.querySelector(".contact-form-container").classList.add("hide");
-    }
+    // #lockContactForm() {
+    //     this.current_step.querySelector(".contact-form-container").classList.add("hide");
+    // }
 
 
     // #handleItemAddition(inputId, labelText) {
@@ -1269,7 +1270,7 @@ export class Configurator {
                 return;
         }
 
-        this.handeleSubscriptionText();
+        this.handeleSubscriptionText(this.selectors.Subscription[0], this.selectors.Subscription[1]);
         this.setProduct("Robot", { "Subscription": { "Mac-Mapp": "✔" } }, null, 0, null);
     }
 
@@ -1359,13 +1360,12 @@ export class Configurator {
     }
 
 
-    handeleSubscriptionText() {
+    handeleSubscriptionText(service, software) {
         this.#disableInfoText("Software", "Subscription");
         this.#disableInfoText("Service", "Subscription");
         this.#disableInfoText("Both", "Subscription");
 
-        const software = !!this.selectors.Subscription[1];
-        const service = !!this.selectors.Subscription[0];
+
 
         const mask = (software << 1) | (service << 0);
 
