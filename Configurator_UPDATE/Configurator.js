@@ -1,6 +1,6 @@
-import { Product } from "/js/contents/Configurator/Product.js";
-import { ContactForm } from "/js/contents/Configurator/ContactForm.js";
-import { APICALL, findNearestRAL, EXPORTTYPE } from "/js/components/api_container.js";
+import { Product } from "./Product.js";
+import { ContactForm } from "./ContactForm.js";
+import { APICALL, findNearestRAL, EXPORTTYPE } from "./api_container.js";
 
 export class Configurator {
 
@@ -57,20 +57,9 @@ export class Configurator {
         this.#initialize();
         this.#initfeatures();
         this.orderTabs = [];
+        // globalThis.__cfg = this;
     }
 
-
-    async #loadHTMLTable(path) {
-        if (this._cache?.[path]) return this._cache[path];
-        const response = await fetch(path);
-        const text = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, "text/html");
-        const table = doc.querySelector("table");
-        this._cache ??= {};
-        this._cache[path] = table;
-        return table;
-    }
 
     #setupContainers() {
         this.container = document.querySelector(".configurator-container");
@@ -81,7 +70,7 @@ export class Configurator {
 
     #setupSteps() {
         this.steps = Configurator.STEP_IDS.reduce((map, id) => {
-            map[id] = this.container.querySelector(`#${id}`);
+            map[id] = document.querySelector(`#${id}`);
             ;
             return map;
         }, {});
@@ -139,13 +128,13 @@ export class Configurator {
             "Software-Tools": [0, 2],
             "Service-Tools": [0, 2],
             "Vision-Based-Tools": [0, 2],
-            "Vision-Based-Properties-Basis-Tools": [0, 1],
-            "Vision-Based-Properties-Standard-Tools": [1, 2],
-            "Vision-Based-Properties-Excellent-Tools": [1, 0],
+            "Vision-Based-Tools-Basis": [0, 1],
+            "Vision-Based-Tools-Standard": [1, 2],
+            "Vision-Based-Tools-Excellent": [1, 0],
             "Tool-Control-Tools": [0, 2],
-            "Tool-Control-Basis-Tools": [0, 0],
-            "Tool-Control-Standard-Tools": [1, 1],
-            "Tool-Control-Excellent-Tools": [1, 0],
+            "Tool-Control-Tools-Basis": [0, 0],
+            "Tool-Control-Tools-Standard": [1, 1],
+            "Tool-Control-Tools-Excellent": [1, 0],
         };
 
         this.bitindexes = {};
@@ -235,18 +224,18 @@ export class Configurator {
             "Software-Tools": [0, 0, false, false, false],
             "Service-Tools": ["Bronze", 0],
             "Vision-Based-Tools": ["Basis", 1, 0],
-            "Vision-Based-Properties-Tools": [null, 0],
-            "Tool-Control-Tools": ["Basis", 1],
-            "Tool-Control-Properties-Tools": [null, 0],
+            "Tool-Control-Tools": ["Basis", 1, 0],
             "Draw-Bar-Re-Dresser": ["✘", null],
             "Re-Axle-Re-Dresser": ["✘", null],
         };
 
         this._programmaticClickDepth = 0;
         this.button_index = 0;
-        this.re_dresser_table = this.#loadHTMLTable("/html/contents/Configurator/configurator-body-container/configuration-panel-container/Tables/Re-Dresser-Table.html");
-        this.vision_based_re_dresser_table = this.#loadHTMLTable("/html/contents/Configurator/configurator-body-container/configuration-panel-container/Tables/Vision-Based-Re-Dresser-Table.html");
-        this.tool_control_table = this.#loadHTMLTable("/html/contents/Configurator/configurator-body-container/configuration-panel-container/Tables/Tools-Control-Table.html");
+        this.re_bot_table = document.getElementById("Re-Bot-Table");
+        this.re_dresser_table = document.getElementById("Re-Dresser-Table");
+        this.tool_control_table = document.getElementById("Tool-Control-Tools-Table");
+        this.vision_based_table = document.getElementById("Vision-Based-Table");
+        this.vision_based_tools_table = document.getElementById("Vision-Based-Tools-Table");
         this.#initCarousels();
         this.contactform = new ContactForm;
         this.contactform.init();
@@ -323,8 +312,15 @@ export class Configurator {
         this.setProductTools({ [tool_header]: { "Features": { [feature_key]: this.selectors[selector_key][0] } } }, this.selectors[selector_key][1], [bit_index_key]);
     }
 
+    setProductToolSubscription(feature_key, feature_value, bit_index_key) {
+        this.setProductTools({ "Subscription": feature_key }, feature_value, bit_index_key);
+    }
     removeProductFeature(key = null, item = null, keyorder = -1) {
         this.product.removeFeature(key, item, keyorder);
+    }
+
+    removeProductBitValue(bit_index_keyorder) {
+        this.removeProductFeature(null, null, bit_index_keyorder);
     }
 
     removeProductFeatureRobot(feature) {
@@ -378,6 +374,7 @@ export class Configurator {
         }
 
         this.current_state_index = Configurator.STEP_IDS.indexOf(this.current_step.id);
+        if (!this.notEventBasedButton) this.step_no = this.current_state_index;
         if (this.current_state_index < 0) return;
 
         this.data_button = this.cell.dataset.button;
@@ -402,7 +399,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(this.current_step + 1);
+        this.#next();
     }
 
 
@@ -434,7 +431,8 @@ export class Configurator {
         this.#deactivateAnyButton('Essential', null);
         this.#deactivateAnyButton('Ideal', null);
         this.#showSelectedImage();
-        this.#unlockStep(this.current_step + 1);
+        this.#next();
+        this.#unlockStep(8);
         this.#lockPanel('selection-panel', 'Robot', 'step-10');
         this.#unlockPanel('selection-panel', 'Tools', 'step-10');
 
@@ -477,6 +475,7 @@ export class Configurator {
             default:
                 break;
         }
+        this.#next();
     }
 
     async #handleVisitor() {
@@ -488,7 +487,6 @@ export class Configurator {
         } finally {
             this.pop_up_handled = true;
             this.#hideHeaderContainer();
-        this.#unlockStep(this.current_step + 1);
             this.#showBodyContainer();
 
         }
@@ -503,7 +501,6 @@ export class Configurator {
         } finally {
             this.pop_up_handled = true;
             this.#hideHeaderContainer();
-        this.#unlockStep(this.current_step + 1);
             this.#showBodyContainer();
         }
     }
@@ -534,6 +531,7 @@ export class Configurator {
             default:
                 break;
         }
+        this.#next();
     }
 
 
@@ -546,7 +544,7 @@ export class Configurator {
             default:
                 break;
         }
-        if (!this.notEventBasedButton) this.#unlockStep(this.current_step + 1);
+        if (!this.notEventBasedButton) this.#next();
     }
 
     #handleConfigurationScope() {
@@ -591,10 +589,7 @@ export class Configurator {
             default:
                 break;
         }
-        if (!this.notEventBasedButton) {
-            this.#unlockStep(this.current_step + 1);
-            this.#unlockStep(this.current_step + 2);
-        }
+        if (!this.notEventBasedButton) this.#unlockStepsUpTo(this.step_no + 2);
     }
 
     handleStep5() {
@@ -645,7 +640,7 @@ export class Configurator {
         }
         if (!this.notEventBasedButton) {
             this.show_Tools_Only = false;
-            this.#unlockStep(this.current_step + 1);
+            this.#next();
         }
     }
 
@@ -667,7 +662,7 @@ export class Configurator {
                 break;
         }
         if (!this.notEventBasedButton) {
-            this.#unlockStep(this.current_step + 1);
+            this.#next();
         }
     }
 
@@ -689,12 +684,12 @@ export class Configurator {
         this.setProductHeaderWiithBitIndex({ "Purchase method": this.selectors.Acquire[0] }, this.selectors.Acquire[1], "Acquire");
         switch (this.data_button) {
             case 'Buy':
-                this.#hideAnyButton('Platinum', 'Subscription-Class-Re-Dresser', 'step-10');
-                this.#showAnyButton('Silver', 'Subscription-Class-Re-Dresser', 'step-10');
+                this.#hideAnyButton('Platinum', 'Service-Tools', 'step-10');
+                this.#showAnyButton('Silver', 'Service-Tools', 'step-10');
                 break;
             case 'Rent':
-                this.#showAnyButton('Platinum', 'Subscription-Class-Re-Dresser', 'step-10');
-                this.#hideAnyButton('Silver', 'Subscription-Class-Re-Dresser', 'step-10');
+                this.#showAnyButton('Platinum', 'Service-Tools', 'step-10');
+                this.#hideAnyButton('Silver', 'Service-Tools', 'step-10');
                 break;
             default:
                 break;
@@ -742,116 +737,103 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(this.current_step + 1);
+        this.#next();
     }
 
-    #handleSoftwareTools() {
-        this.#HandleVisionBasedTools();
-        this.#selectExclusive();
-        this.#updateInfoText();
-        this.setSelectors("Subscription-Re-Dresser");
-        // this.setProduct("Service", { "Re-Dresser": { "Technical service": this.selectors["Subscription-Re-Dresser"][0] } }, this.bitindexes["Subscription-Re-Dresser"][0], this.selectors["Subscription-Re-Dresser"][1], this.bitindexes["Subscription-Re-Dresser"][1]);
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Re-Dresser": { "Technical service": this.selectors["Subscription-Re-Dresser"][0] } } }, this.bitindexes["Subscription-Re-Dresser"][0], this.selectors["Subscription-Re-Dresser"][1], this.bitindexes["Subscription-Re-Dresser"][1]);
+
+    #handleVisionBased2() {
+        this.#toggleButton("Software-Tools", 4);
+        this.#togglePanel("sub-panel", "Vision-Based-Tools", this.current_step.id, this.selectors["Software-Tools"][4]);
+        this.#toggleInfoText("Vision-Based", null, this.selectors["Software-Tools"][4], "Vision-Based-2");
+        if (this.selectors["Software-Tools"][4]) {
+            this.setProductToolSubscription({ "Software": { "Vision-Based™": this.selectors["Vision-Based-Tools"][0] } }, this.selectors["Vision-Based-Tools"][1], "Vision-Based-Tools");
+            this.#clickAnyButton(this.selectors["Vision-Based-Tools"][0], "Vision-Based-Tools");
+        } else {
+            this.setProduct("Robot", { "Subscription": { "Software": { "Vision-Based™": "✘" } } }, this.bitindexes["Vision-Based-Tools"][0], 0, this.bitindexes["Vision-Based-Tools"][1]);
+        }
     }
 
     #handleService() {
         this.setSelectors("Service");
         this.#selectExclusive();
         this.#updateInfoText();
-        this.setProductRobotSubscription("Service", "Service", "Service")
+        this.setProductRobotSubscription({ "Service": this.selectors.Service[0] }, this.selectors.Service[1], "Service")
         // this.setProduct("Service", { "Re-Bot": { Subscription: this.data_button } }, this.bitindexes["Service"][0], this.button_index, this.bitindexes["Service"][1]);
     }
 
-    #handleVisionBasedPropertiesTools() {
-        this.setSelectors("Vision-Based-Re-Dresser", this.data_button, this.button_index + 1);
+    #handleVisionBasedTools() {
+        this.setSelectorsExt(this.sub_panel.id, this.data_button, this.button_index + 1, 0);
         this.#selectExclusive();
-        this.#updateInfoText();
         this.#handleTableCols(this.sub_panel.id);
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Vision-Based-for-Re-Dresser": { "Vision-Based variant for Re-Dresser": this.selectors["Vision-Based-Re-Dresser"][0] } } }, this.bitindexes["Vision-Based-Re-Dresser"][0], this.selectors["Vision-Based-Re-Dresser"][1], this.bitindexes["Vision-Based-Re-Dresser"][1]);
-        // this.setProduct("Service", { "Vision-Based-for-Re-Dresser": { "Vision-Based variant for Re-Dresser": this.selectors["Vision-Based-Re-Dresser"][0] } }, this.bitindexes["Vision-Based-Re-Dresser"][0], this.selectors["Vision-Based-Re-Dresser"][1], this.bitindexes["Vision-Based-Re-Dresser"][1]);
+        this.setProductToolSubscription({ "Software": { "Vision-Based™": this.selectors["Vision-Based-Tools"][0] } }, this.selectors["Vision-Based-Tools"][1], "Vision-Based-Tools");
+        this.#handleTableCols(this.sub_panel.id);
         switch (this.data_button) {
             case "Excellent":
-                this.removeProductFeature({ keyorder: this.bitindexes["Vision-Based-Re-Dresser-Properties-Excellent"][0] });
+                this.removeProductBitValue(this.bitindexes["Vision-Based-Tools-" + this.data_button][0]);
                 break;
             case "Basis":
             case "Standard":
-                this.setProduct(null, null, this.bitindexes["Vision-Based-Re-Dresser-Properties-" + this.data_button][0], this.selectors["Vision-Based-Re-Dresser-Properties"][1], this.bitindexes["Vision-Based-Re-Dresser-Properties-" + this.data_button][1]);
+                this.setProductBitValue(this.bitindexes["Vision-Based-Tools-" + this.data_button][0], 0, this.bitindexes["Vision-Based-Tools-" + this.data_button][1]);
                 break;
             default:
-                if (this.cell.classList.contains("open-close-button")) {
-                    this.#handlePopupTable();
-                }
                 break;
         }
-    }
 
-    #HandleVisionBasedTools() {
-        const state = this.#toggleSelector(this.data_button);
-        this.#toggleButton();
-        this.#toggleInfoText(this.data_button);
-        this.setProduct("Feature", { Service: true });
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Vision-Based-for-Re-Dresser": { "Vision-Based variant for Re-Dresser": state ? this.selectors["Vision-Based-Re-Dresser"][0] : "✘" } } }, this.bitindexes["Vision-Based-Re-Dresser"][0], state ? this.selectors["Vision-Based-Re-Dresser"][1] : 0, this.bitindexes["Vision-Based-Re-Dresser"][1]);
-        // this.setProduct("Service", { "Vision-Based-for-Re-Dresser": { "Vision-Based variant for Re-Dresser": state ? this.selectors["Vision-Based-Re-Dresser"][0] : "✘" } }, this.bitindexes["Vision-Based-Re-Dresser"][0], state ? this.selectors["Vision-Based-Re-Dresser"][1] : 0, this.bitindexes["Vision-Based-Re-Dresser"][1]);
-        if (state) {
-            this.#unlockPanel("sub-panel", "Vision-Based-Re-Dresser-Properties");
-            this.#clickAnyButton(this.selectors["Vision-Based-Re-Dresser"][0], "Vision-Based-Re-Dresser-Properties");
-        } else {
-            this.#lockPanel("sub-panel", "Vision-Based-Re-Dresser-Properties");
+        if (this.cell.classList.contains("open-close-button")) {
+            this.#handlePopupTable();
         }
     }
 
-    #handleToolControlVariant() {
-        this.setSelectors("Tool-Control", this.data_button, this.button_index + 1);
+    #handleToolControlTools() {
+        this.setSelectorsExt(this.sub_panel.id, this.data_button, this.button_index + 1, 0);
         this.#selectExclusive();
-        this.#updateInfoText();
+        this.#handleTableCols("Tool-Control-Tools");
+        this.setProductToolSubscription({ "Software": { "Tool-Control": this.selectors["Tool-Control-Tools"][0] } }, this.bitindexes["Tool-Control-Tools"][1], "Tool-Control-Tools");
         this.#handleTableCols(this.sub_panel.id);
-
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Tool-Control": { "Tool-Control for Re-Dresser": this.selectors["Tool-Control"][0] } } }, this.bitindexes["Tool-Control"][0], this.selectors["Tool-Control"][1], this.bitindexes["Tool-Control"][1]);
-        // this.setProduct("Service", { "Tool-Control": { "Tool-Control for Re-Dresser": this.selectors["Tool-Control"][0] } }, this.bitindexes["Tool-Control"][0], this.selectors["Tool-Control"][1], this.bitindexes["Tool-Control"][1]);
         switch (this.data_button) {
-            case "Excellent":
-                this.removeProductFeature({ keyorder: this.bitindexes["Tool-Control-Variant-Excellent"][0] });
-                break;
             case "Basis":
+            case "Excellent":
+                this.removeProductBitValue(this.bitindexes["Tool-Control-Tools-" + this.data_button][0]);
+                break;
             case "Standard":
-                this.setProduct(null, null, this.bitindexes["Tool-Control-Variant-" + this.data_button][0], this.selectors["Tool-Control-Variant"][1], this.bitindexes["Tool-Control-Variant-" + this.data_button][1]);
+                this.setProductBitValue(this.bitindexes["Tool-Control-Tools-" + this.data_button][0], 0, this.bitindexes["Tool-Control-Tools-" + this.data_button][1]);
                 break;
             default:
-                if (this.cell.classList.contains("open-close-button")) {
-                    this.#handlePopupTable();
-                }
                 break;
         }
-    }
 
-
-    #HandleToolControl() {
-        const state = this.#toggleSelector(this.data_button);
-        this.#toggleButton();
-        this.#toggleInfoText(this.data_button);
-        this.setProduct("Feature", { Service: true });
-        this.setProduct("Tool: Re-Dresser™", { "Subscription": { "Tool-Control": { "Tool-Control for Re-Dresser": state ? this.selectors["Tool-Control"][0] : "✘" } } }, this.bitindexes["Tool-Control"][0], state ? this.selectors["Tool-Control"][1] : 0, this.bitindexes["Tool-Control"][1]);
-        // this.setProduct("Service", { "Tool-Control": { "Tool-Control for Re-Dresser": state ? this.selectors["Tool-Control"][0] : "✘" } }, this.bitindexes["Tool-Control"][0], state ? this.selectors["Tool-Control"][1] : 0, this.bitindexes["Tool-Control"][1]);
-        if (state) {
-            this.#unlockPanel("sub-panel", "Tool-Control-Variant");
-            this.#clickAnyButton(this.selectors["Tool-Control"][0], "Tool-Control-Variant");
-
-        } else {
-            this.#lockPanel("sub-panel", "Tool-Control-Variant");
+        if (this.cell.classList.contains("open-close-button")) {
+            this.#handlePopupTable();
         }
     }
 
     #handleSoftware() {
+        if (this.selectors.Subscription[1] && !this._subscriptionInputsInit) {
+            this.#initSubscriptionNumberInputs();
+            this._subscriptionInputsInit = true;
+        }
+    }
+
+    #handleDriveCabManual() {
+        this.#toggleButton("Software", 4);
+        if (this.selectors.Software[4]) {
+            this.setProduct("Robot", { "Subscription": { "Software": { "Drive-Cab": "✔" } } }, this.bitindexes["Software-Drive-Cab"][0], 1, this.bitindexes["Software-Drive-Cab"][1]);
+        } else {
+            this.setProduct("Robot", { "Subscription": { "Software": { "Drive-Cab": "✘" } } }, this.bitindexes["Software-Drive-Cab"][0], 0, this.bitindexes["Software-Drive-Cab"][1]);
+        }
+    }
+
+    #handleVision() {
         switch (this.data_button) {
             case "Vision-Based":
                 this.#toggleButton("Software", 2);
                 this.#togglePanel("sub-panel", "Vision-Based", this.current_step.id, this.selectors.Software[2]);
-                this.#toggleInfoText("Vision-Based", null, this.selectors.Software[2], "Software");
+                this.#toggleInfoText("Vision-Based", null, this.selectors.Software[2], "Vision");
                 if (this.selectors.Software[2]) {
-                    this.setProduct("Robot", { "Subscription": { "Software": { "Vision-Based": this.selectors["Vision-Based"][0] } } }, this.bitindexes["Vision-Based"][0], this.selectors["Vision-Based"][1], this.bitindexes["Vision-Based"][1]);
+                    this.setProduct("Robot", { "Subscription": { "Software": { "Vision-Based™": this.selectors["Vision-Based"][0] } } }, this.bitindexes["Vision-Based"][0], this.selectors["Vision-Based"][1], this.bitindexes["Vision-Based"][1]);
                     this.#clickAnyButton(this.selectors["Vision-Based"][0], "Vision-Based");
                 } else {
-                    this.setProduct("Robot", { "Subscription": { "Software": { "Vision-Based": "✘" } } }, this.bitindexes["Vision-Based"][0], 0, this.bitindexes["Vision-Based"][1]);
+                    this.setProduct("Robot", { "Subscription": { "Software": { "Vision-Based™": "✘" } } }, this.bitindexes["Vision-Based"][0], 0, this.bitindexes["Vision-Based"][1]);
                 }
                 break;
             case "Sky-Vision":
@@ -863,28 +845,21 @@ export class Configurator {
                     this.setProduct("Robot", { "Subscription": { "Software": { "Sky-Vision": "✘" } } }, this.bitindexes["Sky-Vision"][0], 0, this.bitindexes["Sky-Vision"][1]);
                 }
                 break;
-            case "Drive-Cab":
-                this.#toggleButton("Software", 4);
-                if (this.selectors.Software[4]) {
-                    this.setProduct("Robot", { "Subscription": { "Software": { "Drive-Cab": "✔" } } }, this.bitindexes["Software-Drive-Cab"][0], 1, this.bitindexes["Software-Drive-Cab"][1]);
-                } else {
-                    this.setProduct("Robot", { "Subscription": { "Software": { "Drive-Cab": "✘" } } }, this.bitindexes["Software-Drive-Cab"][0], 0, this.bitindexes["Software-Drive-Cab"][1]);
-                }
-                break;
             default:
                 return;
         }
     }
 
+
     #handleVisionBased() {
         this.setSelectorsExt(this.sub_panel.id, this.data_button, this.button_index + 1, 0);
         this.#selectExclusive();
         this.#handleTableCols(this.sub_panel.id);
-        this.setProductRobotSubscription({ "Software": { "Vision-Based": this.selectors["Vision-Based"][0] } }, this.bitindexes["Vision-Based"][1], "Vision-Based");
+        this.setProductRobotSubscription({ "Software": { "Vision-Based™": this.selectors["Vision-Based"][0] } }, this.bitindexes["Vision-Based"][1], "Vision-Based");
         this.#handleTableCols(this.sub_panel.id);
         switch (this.data_button) {
             case "Excellent":
-                this.removeProductFeature({ keyorder: this.bitindexes["Vision-Based-" + this.data_button][0] });
+                this.removeProductBitValue(this.bitindexes["Vision-Based-" + this.data_button][0]);
                 break;
             case "Basis":
             case "Standard":
@@ -910,7 +885,7 @@ export class Configurator {
             default:
                 break;
         }
-        this.#unlockStep(this.current_step + 1);
+        this.#next();
     }
 
     handleStep10() {
@@ -924,6 +899,12 @@ export class Configurator {
             case "Software":
                 this.#handleSoftware();
                 break;
+            case "Drive-Cab-Manual":
+                this.#handleDriveCabManual();
+                break;
+            case "Vision":
+                this.#handleVision();
+                break;
             case "Vision-Based":
                 this.#handleVisionBased();
                 break;
@@ -933,45 +914,64 @@ export class Configurator {
             case "Service-Tools":
                 this.#handleServiceTools();
                 break;
-            case "Software-Tools":
-                this.#handleSoftwareTools();
+            case "Vision-Based-2":
+                this.#handleVisionBased2();
                 break;
-            case "Vision-Based-Properties-Tools":
-                this.#handleVisionBasedPropertiesTools();
+            case "Tool-Control":
+                this.#handleToolControl();
+                break;
+            case "Vision-Based-Tools":
+                this.#handleVisionBasedTools();
                 break;
             case "Tool-Control-Tools":
-                this.#HandleToolControl();
-                break;
-            case "Tool-Control-Properties-Tools":
-                this.#handleToolControlVariant();
+                this.#handleToolControlTools();
                 break;
             default:
                 break;
         }
-        this.#unlockStep(this.current_step + 1);
+        this.#next();
+    }
+
+    #handleToolControl() {
+        switch (this.data_button) {
+            case "Tool-Control":
+                this.#toggleButton("Software-Tools", 2);
+                this.#togglePanel("sub-panel", "Tool-Control-Tools", this.current_step.id, this.selectors["Software-Tools"][2]);
+                this.#toggleInfoText("Tool-Control", null, this.selectors["Software-Tools"][2], "Tool-Control");
+                if (this.selectors["Software-Tools"][2]) {
+                    this.setProduct("Tools", { "Subscription": { "Software": { "Tool-Control™ (ISO-BUS)": this.selectors["Tool-Control-Tools"][0] } } }, this.bitindexes["Tool-Control-Tools"][0], this.selectors["Tool-Control-Tools"][1], this.bitindexes["Tool-Control-Tools"][1]);
+                    this.#clickAnyButton(this.selectors["Tool-Control-Tools"][0], "Tool-Control-Tools");
+                } else {
+                    this.setProduct("Tools", { "Subscription": { "Software": { "Tool-Control™ (ISO-BUS)": "✘" } } }, this.bitindexes["Tool-Control-Tools"][0], 0, this.bitindexes["Tool-Control-Tools"][1]);
+                }
+                break;
+            case "Tool-Partner":
+                this.#toggleButton("Software-Tools", 3);
+                break;
+            default:
+                break;
+        }
+
     }
 
     #handleSubscriptionTools() {
         switch (this.data_button) {
-            case "Service-Tools":
+            case "Service":
                 this.#toggleButton("Subscription-Tools", 0);
                 this.#togglePanel("sub-panel", "Service-Tools", "step-10", this.selectors["Subscription-Tools"][0]);
                 this.#clickAnyButton(this.selectors["Service-Tools"][0], "Service-Tools");
                 break;
-            case "Software-Tools":
+            case "Software":
                 this.#toggleButton("Subscription-Tools", 1);
                 this.#togglePanel("sub-panel", "Software-Tools", "step-10", this.selectors["Subscription-Tools"][1]);
-
-                // if (this.selectors.Subscription[1] && !this._subscriptionInputsInit) {
-                //     this.#initSubscriptionNumberInputs();
-                //     this._subscriptionInputsInit = true;
-                // }
+                this.#togglePanel("sub-panel", "Vision-Based-2", "step-10", this.selectors["Subscription-Tools"][1]);
+                this.#togglePanel("sub-panel", "Tool-Control", "step-10", this.selectors["Subscription-Tools"][1]);
                 break;
             default:
                 return;
-        }
+        }"Subscription-Tools"
 
-        this.handeleSubscriptionText(this.selectors["Subscription-Tools"][0], this.selectors["Subscription-Tools"][1]);
+        this.handeleSubscriptionText("Subscription-Tools");
         this.setProduct("Tools", { "Subscription": { "Mac-Mapp": "✔" } }, null, 0, null);
     }
 
@@ -991,111 +991,12 @@ export class Configurator {
         }
     }
 
-    // #handleRequest() {
-    //     const inputElement = this.current_step.querySelector(`[data-button="${this.data_button}"]`);
-    //     inputElement.classList.toggle("active");
-    //     const fieldContainer = inputElement.closest(".contact-form-field");
-    //     const labelEl = fieldContainer.querySelector("label[for='request']");
-    //     if (!labelEl) return;
-
-    //     const isHidden = labelEl.classList.toggle("hide");
-    //     this.togglers.Request = isHidden;
-    //     labelEl.setAttribute("aria-hidden", isHidden ? "true" : "false");
-    //     return;
-    // }
-
     #handleServiceTools() {
         this.setSelectors("Service-Tools");
         this.#selectExclusive();
         this.#updateInfoText();
-        this.setProductTools("Subscription", 3,"Service-Tools", "Service-Tools", "Service-Tools")
-        // this.setProductRobotSubscription("Service-Tools", "Service-Tools", "Service-Tools")
-
-        // this.setProduct("Service", { "Re-Bot": { Subscription: this.data_button } }, this.bitindexes["Service"][0], this.button_index, this.bitindexes["Service"][1]);
+        this.setProductToolSubscription({ "Service": this.selectors["Service-Tools"][0] }, this.selectors["Service-Tools"][1], "Service")
     }
-
-    // #unlockContactForm() {
-    //     this.current_step.querySelector(".contact-form-container").classList.remove("hide");
-    // }
-
-    // #lockContactForm() {
-    //     this.current_step.querySelector(".contact-form-container").classList.add("hide");
-    // }
-
-
-    // #handleItemAddition(inputId, labelText) {
-    //     const inputElement = this.current_step.querySelector(`[data-name="${inputId}"]`);
-    //     if (!inputElement) return;
-
-    //     const fieldContainer = inputElement.closest(".contact-form-field");
-    //     if (!fieldContainer) return;
-
-    //     const counterElement = fieldContainer.querySelector(".content");
-    //     const listContainer = fieldContainer.querySelector(".content-box");
-    //     if (!counterElement || !listContainer) return;
-
-    //     const inputValue = inputElement.value.trim();
-    //     if (inputValue === "") return;
-
-    //     // Create and append new list item
-    //     const newItem = document.createElement("li");
-    //     newItem.classList.add("content-element");
-    //     newItem.textContent = inputValue;
-    //     listContainer.appendChild(newItem);
-
-    //     // Update counter
-    //     const match = counterElement.textContent.match(/\d+/);
-    //     let currentCount = match ? parseInt(match[0], 10) : 0;
-    //     counterElement.textContent = `${labelText}: ${++currentCount}`;
-
-    //     // Clear input
-    //     inputElement.value = "";
-    // }
-
-    // Collect form data; machines/tools become arrays (from .content-element items)
-    // #getFormData(form) {
-    //     if (!form) return {};
-
-    //     const inputs = form.querySelectorAll("[name]");
-    //     const data = {};
-
-    //     inputs.forEach(input => {
-    //         if (input.type && input.type.toLowerCase() === "hidden") return;
-    //         const name = input.name;
-    //         if (name === "machines" || name === "tools") {
-    //             const fieldContainer = input.closest(".contact-form-field");
-    //             const listItems = fieldContainer?.querySelectorAll(".content-box .content-element") ?? [];
-    //             const arr = Array.from(listItems)
-    //                 .map(li => li.textContent.trim())
-    //                 .filter(v => v !== "");
-    //             data[name] = arr;
-    //         } else {
-    //             // For other inputs (including textarea) store trimmed value
-    //             data[name] = (input.value ?? "").trim();
-    //         }
-    //     });
-
-    //     return data;
-    // }
-
-    // #isFormFilled(form) {
-    //     if (!form) return false;
-    //     const requiredEls = Array.from(form.querySelectorAll("[required]"));
-    //     if (requiredEls.length === 0) return true;
-    //     return requiredEls.every(input => {
-    //         const name = input.name;
-
-    //         if (name === "machines" || name === "tools") {
-    //             const fieldContainer = input.closest(".contact-form-field");
-    //             if (!fieldContainer) return false;
-    //             const listItems = fieldContainer.querySelectorAll(".content-box .content-element");
-    //             return listItems.length > 0;
-    //         } else {
-    //             const val = (input.value ?? "").trim();
-    //             return val !== "";
-    //         }
-    //     });
-    // }
 
     async #handleGoToOrderList() {
         let BusinessCaseResult = null;
@@ -1108,14 +1009,66 @@ export class Configurator {
         } finally {
             if (!BusinessCaseResult) return;
             localStorage.setItem("BusinessCase", JSON.stringify(BusinessCaseResult.data));
-            this.#updateProductSpec();
-            this.product.exportData();
-            // this.goToNewTabURL("/html/contents/Configurator/Order.html");
+            await this.#updateProductSpec();
+            await this.product.exportData();
+            await this.export2PDF(BusinessCaseResult);
+            this.goToNewTabURL("/html/contents/Configurator/Order.html");
         }
     }
 
+    loadVisitorFromStorage() {
+        try {
+            const raw = localStorage.getItem('VisitorData') || localStorage.getItem('VisitorData');
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') return parsed;
+            return null;
+        } catch (err) {
+            console.warn('Failed to parse visitor data from localStorage:', err);
+            return null;
+        }
+    };
 
-    #updateProductSpec() {
+    async export2PDF(BusinessCaseResult) {
+        const visitorData = this.loadVisitorFromStorage();
+        if (visitorData) {
+            console.debug('Using visitor data from localStorage:', visitorData);
+        } else {
+            console.debug('No visitor data found in localStorage.');
+        }
+        const bcMerged = Object.assign({}, ...Object.values(BusinessCaseResult.data || {}));
+        const merged = Object.assign({}, visitorData || {}, bcMerged || {});
+        const customer_info = {
+            name: merged.name || merged.Name || "-",
+            country: merged.Area || merged.country || merged.Country || "-",
+            phone_number: merged.Phone || merged.phone || merged.phone_number || "-",
+            email: merged.Email || merged.email || merged.contact_email || "-",
+            company: merged.Company || merged.company || merged.Virksomhed || "-",
+            CVR: merged.CVR || "-",
+            EAN: merged.EAN || "-",
+            reference: merged.reference || "-",
+            position: merged.position || merged.Title || "-",
+            loc_pr_hectre: merged.Locations || merged.loc_pr_hectre || "-",
+            hectre: merged.Ha ?? merged.hectre ?? merged.hectare ?? "-",
+            n_km_loc: merged.km_between_locations ?? merged.n_km_loc ?? "-",
+            n_machinists: merged.staff_members ?? merged.n_machineists ?? "-",
+            n_gardeners: merged.n_gardeners ?? "-",
+            machines: Array.isArray(merged.machines)
+                ? merged.machines
+                : (merged.machines ? [merged.machines] : []),
+            tools: Array.isArray(merged.tools)
+                ? merged.tools
+                : (merged.tools ? [merged.tools] : []),
+        };
+
+        const exporter = new PDFExporter();
+        exporter.setup(this.product);
+        exporter.setCustomerInfo(customer_info);
+        await exporter.build();
+        await exporter.print();
+    }
+
+    async #updateProductSpec() {
         this.#updateReDresserSpec();
         this.#updateVisionBasedReDresserServiceSpec();
         this.#updateToolControlSpec();
@@ -1129,7 +1082,6 @@ export class Configurator {
             this.#handleCustomColor();
         }
         this.setProductToolFeatures("Re-Dresser™", "Color", "Re-Dresser-Color", "Re-Dresser-Color");
-        // this.setProduct("Tools", { "Re-Dresser": { "Color": this.selectors["Re-Dresser-Color"][0] } }, this.bitindexes["Re-Dresser-Color"][0], this.selectors["Re-Dresser-Color"][1], this.bitindexes["Re-Dresser-Color"][1]);
     }
 
     handleUnlockAllButton() {
@@ -1259,18 +1211,15 @@ export class Configurator {
             case "Software":
                 this.#toggleButton("Subscription", 1);
                 this.#togglePanel("sub-panel", "Software", "step-10", this.selectors.Subscription[1]);
-
-                if (this.selectors.Subscription[1] && !this._subscriptionInputsInit) {
-                    this.#initSubscriptionNumberInputs();
-                    this._subscriptionInputsInit = true;
-                }
+                this.#togglePanel("sub-panel", "Vision", "step-10", this.selectors.Subscription[1]);
+                this.#togglePanel("sub-panel", "Drive-Cab-Manual", "step-10", this.selectors.Subscription[1]);
+                this.#clickAnyButton("Mac-Mapp", "Software");
                 break;
-
             default:
                 return;
         }
 
-        this.handeleSubscriptionText(this.selectors.Subscription[0], this.selectors.Subscription[1]);
+        this.handeleSubscriptionText("Subscription");
         this.setProduct("Robot", { "Subscription": { "Mac-Mapp": "✔" } }, null, 0, null);
     }
 
@@ -1360,10 +1309,12 @@ export class Configurator {
     }
 
 
-    handeleSubscriptionText(service, software) {
-        this.#disableInfoText("Software", "Subscription");
-        this.#disableInfoText("Service", "Subscription");
-        this.#disableInfoText("Both", "Subscription");
+    handeleSubscriptionText(sub_panel_id = this.sub_panel.id) {
+        const service = this.selectors[sub_panel_id][0];
+        const software = this.selectors[sub_panel_id][1];
+        this.#disableInfoText("Software", sub_panel_id);
+        this.#disableInfoText("Service", sub_panel_id);
+        this.#disableInfoText("Both", sub_panel_id);
 
 
 
@@ -1371,13 +1322,13 @@ export class Configurator {
 
         switch (mask) {
             case 3:
-                this.#enableInfoText("Both", "Subscription");
+                this.#enableInfoText("Both", sub_panel_id);
                 break;
             case 2:
-                this.#enableInfoText("Software", "Subscription");
+                this.#enableInfoText("Software", sub_panel_id);
                 break;
             case 1:
-                this.#enableInfoText("Service", "Subscription");
+                this.#enableInfoText("Service", sub_panel_id);
                 break;
             default:
                 break;
@@ -1455,73 +1406,73 @@ export class Configurator {
     }
 
     setSelectorsExt(key, value, index = null, position = 0) {
-    if (!(key in this.selectors)) {
-        throw new Error(`setSelector: Ukendt selector-key "${key}"`);
-    }
-
-    const current = this.selectors[key];
-
-    // Case 1: scalar (number / boolean / string)
-    if (!Array.isArray(current)) {
-        this.selectors[key] = value;
-        return;
-    }
-
-    // Case 2: array
-    const next = [...current];
-
-    // position 0 = value
-    if (position !== null) {
-        if (position < 0 || position >= next.length) {
-            throw new Error(
-                `setSelector: position ${position} out of bounds for "${key}" (length ${next.length})`
-            );
+        if (!(key in this.selectors)) {
+            throw new Error(`setSelector: Ukendt selector-key "${key}"`);
         }
-        next[position] = value;
-    }
 
-    // optional index-position (konventionelt position 1)
-    if (index !== null && next.length > 1) {
-        next[1] = index;
-    }
+        const current = this.selectors[key];
 
-    this.selectors[key] = next;
-}
+        // Case 1: scalar (number / boolean / string)
+        if (!Array.isArray(current)) {
+            this.selectors[key] = value;
+            return;
+        }
+
+        // Case 2: array
+        const next = [...current];
+
+        // position 0 = value
+        if (position !== null) {
+            if (position < 0 || position >= next.length) {
+                throw new Error(
+                    `setSelector: position ${position} out of bounds for "${key}" (length ${next.length})`
+                );
+            }
+            next[position] = value;
+        }
+
+        // optional index-position (konventionelt position 1)
+        if (index !== null && next.length > 1) {
+            next[1] = index;
+        }
+
+        this.selectors[key] = next;
+    }
 
 
     setSelector(key, value, index = null, position = 0) {
-    if (!(key in this.selectors)) {
-        throw new Error(`setSelector: Ukendt selector-key "${key}"`);
-    }
-
-    const current = this.selectors[key];
-
-    // Case 1: scalar (number / boolean / string)
-    if (!Array.isArray(current)) {
-        this.selectors[key] = value;
-        return;
-    }
-
-    // Case 2: array
-    const next = [...current];
-
-    // position 0 = value
-    if (position !== null) {
-        if (position < 0 || position >= next.length) {
-            throw new Error(
-                `setSelector: position ${position} out of bounds for "${key}" (length ${next.length})`
-            );
+        if (!(key in this.selectors)) {
+            throw new Error(`setSelector: Ukendt selector-key "${key}"`);
         }
-        next[position] = value;
-    }
 
-    // optional index-position (konventionelt position 1)
-    if (index !== null && next.length > 1) {
-        next[1] = index;
-    }
+        const current = this.selectors[key];
 
-    this.selectors[key] = next;
-}
+        // Case 1: scalar (number / boolean / string)
+        if (!Array.isArray(current)) {
+            this.selectors[key] = value;
+            return;
+        }
+
+        // Case 2: array
+        const next = [...current];
+
+        // position 0 = value
+        if (position !== null) {
+            if (position < 0 || position >= next.length) {
+                throw new Error(
+                    `setSelector: position ${position} out of bounds for "${key}" (length ${next.length})`
+                );
+            }
+            next[position] = value;
+        }
+
+        // optional index-position (konventionelt position 1)
+        if (index !== null && next.length > 1) {
+            next[1] = index;
+        }
+
+        this.selectors[key] = next;
+    }
 
 
     #handleColorVariants() {
@@ -1709,6 +1660,10 @@ export class Configurator {
         this.steps[Configurator.STEP_IDS[n]]?.classList.add("hide");
     }
 
+    #next() {
+        this.#unlockStep(this.step_no + 1);
+    }
+
     #handleFlexDrive() {
         this.#toggleButton();
         this.#toggleInfoText("with-CTI", "without-CTI", this.selectors[this.sub_panel.id][1]);
@@ -1856,7 +1811,7 @@ export class Configurator {
         this.setProductHeaderWiithBitIndex({ "Branch": this.selectors.Branch[0] }, this.selectors.Branch[1], "Branch");
         this.#clickAnyButton(this.data_button, 'Color', 'step-4');
         this.#clickAnyButton(variant, 'Branch-Variants', "step-4");
-        this.#unlockStepsUpTo(this.current_step + 3);
+        this.#unlockStepsUpTo(this.step_no + 3);
     }
 
 
@@ -2117,7 +2072,7 @@ export class Configurator {
     }
 
     #updateVisionBasedReDresserServiceSpec() {
-        this.vision_based_re_dresser_table.then(table => {
+        this.vision_based_table.then(table => {
             const variant = this.selectors["Vision-Based-Re-Dresser"][0];
             const optionsBits = this.selectors["Vision-Based-Re-Dresser-Properties"][1] ?? 0;
 
@@ -2143,7 +2098,7 @@ export class Configurator {
 
     #updateToolControlSpec() {
         this.tool_control_table.then(table => {
-            const variant = this.selectors["Tool-Control"][0];
+            const variant = this.selectors["Tool-Control-Variant"][0];
             const optionsBits = this.selectors["Tool-Control-Variant"][1] ?? 0;
 
             let bitIndex = 0; // increments only on optional rows
@@ -2168,8 +2123,9 @@ export class Configurator {
 
 
     #updateReDresserSpec() {
+        if(!this.selectors["Re-Dresser"][1]) return;
         this.re_dresser_table.then(table => {
-            const variant = this.selectors["Re-Dresser"][0];
+            const variant = this.selectors["Re-Dresser-Properties"][0];
             const optionsBits = this.selectors["Re-Dresser-Properties"][1] ?? 0;
 
             let bitIndex = 0; // increments only on optional rows
@@ -2851,11 +2807,11 @@ export class Configurator {
 
 
     #hideHeaderContainer() {
-        this.container.querySelector(".product-container-header").classList.add("hide");
+        document.querySelector(".product-container-header").classList.add("hide");
     }
 
     #showBodyContainer() {
-        this.container.querySelector(".configurator-body-container").classList.remove("hide");
+        document.querySelector(".configurator-body-container").classList.remove("hide");
     }
 
     #showSelectedImageText(data_image_group, data_text, text = this.data_button) {

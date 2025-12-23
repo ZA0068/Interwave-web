@@ -1,0 +1,376 @@
+/*-----------------------------------
+  Container & Layout
+-----------------------------------*/
+:root {
+    --logo-color-rgb: 202, 211, 38;
+    /* RGB only, no alpha */
+}
+
+.table-content {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.table-wrapper {
+    flex: 1;
+    width: 5rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.table-wrapper:hover {
+    transform: translateY(-3px);
+}
+
+/*-----------------------------------
+  Table Header
+-----------------------------------*/
+.table-wrapper h3 {
+    text-align: center;
+    margin: 0;
+    padding: 12px;
+    font-size: 1.2rem;
+    background: var(--logo-color);
+    color: #fff;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.table-wrapper th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #444;
+    padding: 12px 14px;
+}
+
+/*-----------------------------------
+  Table Body
+-----------------------------------*/
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table-wrapper th:first-child,
+.table-wrapper td:first-child {
+    width: 100px;
+    text-align: left;
+}
+
+.table-wrapper th:nth-child(n+2),
+.table-wrapper td:nth-child(n+2) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-wrapper td {
+    position: relative;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+/*-----------------------------------
+  Empty Cells as Buttons
+-----------------------------------*/
+.table-wrapper td:empty {
+    cursor: pointer;
+    background: linear-gradient(135deg, #f0f8ff, #e6f2ff);
+    border-radius: 6px;
+    transition: all 0.25s ease;
+    min-height: 28px;
+}
+
+.table-wrapper td:empty:hover {
+    background: var(--logo-color);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.table-wrapper td:empty:active {
+    background: #000000;
+    transform: scale(0.97);
+}
+
+/*-----------------------------------
+  Option Cells
+-----------------------------------*/
+/* Unselected pulse on border */
+.option-cell {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    /* circle */
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    transition: border-color 0.2s, background-color 0.2s;
+    animation: pulse-border 1.2s infinite;
+}
+
+.option-cell:hover {
+    border-color: #000;
+    /* black border on hover */
+}
+
+/* Selected: black filled circle at center, no pulse */
+.option-cell.selected {
+    animation: none;
+}
+
+.option-cell.selected::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: #000;
+    /* black fill */
+    border-radius: 50%;
+    /* circle */
+    transform: translate(-50%, -50%);
+}
+
+/* Pulse animation for unselected border */
+@keyframes pulse-border {
+    0% {
+        border-color: var(--logo-color);
+        box-shadow: 0 0 0 var(--logo-color);
+    }
+
+    50% {
+        border-color: var(--logo-color);
+        box-shadow: 0 0 8px var(--logo-color);
+    }
+
+    100% {
+        border-color: var(--logo-color);
+        box-shadow: 0 0 0 transparent;
+    }
+}
+
+
+/*-----------------------------------
+  Spec Table
+-----------------------------------*/
+.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.spec-table tr{
+    width: 100%;
+}
+
+.spec-table th,
+.spec-table td {
+    padding: 0.5rem 1rem;
+    border: 1px solid #000;
+    /* optional */
+}
+
+.spec-table th:first-child,
+.spec-table td:first-child {
+    width: 5rem;
+    text-align: left;
+}
+
+.spec-table th:nth-child(n+2),
+.spec-table td:nth-child(n+2) {
+    text-align: center;
+}
+
+/*-----------------------------------
+  Highlighting & Disabled Columns
+-----------------------------------*/
+.column-highlight {
+    background-color: #fff;
+    border-color: var(--engbakken-color);
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+.column-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.content-cell {
+    animation: none;
+}
+
+.content-cell.selected {
+    animation: pulse 1.2s infinite;
+    border-color: var(--logo-color);
+}
+
+.open-close-button {
+    display: block;
+    margin: 1rem auto 0;
+    /* spacing above, center horizontally */
+    margin-bottom: 1rem;
+    padding: 0rem;
+    border: 2px solid var(--logo-color);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    animation: pulse-border-cross 1.5s infinite;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.open-close-icon {
+    width: 2rem;
+    height: 2rem;
+    display: block;
+    margin: 0 auto;
+    /* centers the icon */
+    fill: black;
+    transition: transform 0.3s, fill 0.3s;
+}
+
+/* Hover rotates the icon */
+.open-close-button:hover .open-close-icon {
+    transform: rotate(45deg);
+    fill: var(--engbakken-color);
+}
+
+/* Active rotates and changes background */
+.open-close-button:active {
+    background: white;
+    fill: var(--engbakken-color);
+}
+
+.open-close-button:active .open-close-icon {
+    transform: rotate(45deg);
+}
+
+
+
+@keyframes pulse-border-cross {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--logo-color-rgb), 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(var(--logo-color-rgb), 0.5);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--logo-color-rgb), 0);
+    }
+}
+
+
+/* overlay that dims the page */
+.pop-up-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    /* fallback if var is not set */
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.pop-up-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* popup centered in viewport with smooth scale/opacity animation */
+.pop-up {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 38rem;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid var(--engbakken-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    z-index: 1001;
+
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+/* visible state */
+.pop-up.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+/* popup content */
+.pop-up-content.text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #111;
+}
+
+.pop-up .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 1002;
+    opacity: 0.85;
+    color: rgba(171, 13, 13, 0.4);
+    transition: all .15s ease-in-out;
+    padding: 0;
+}
+
+.pop-up .close-button:hover {
+    opacity: 1;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    color: rgb(255, 0, 0);
+    transform: scale(1.05);
+}
+
+.pop-up .close-button svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .pop-up,
+    .pop-up-overlay {
+        transition: none;
+    }
+
+    .pop-up {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}

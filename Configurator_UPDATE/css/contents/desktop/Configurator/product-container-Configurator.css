@@ -1,0 +1,119 @@
+.product-cards-container.products.Configurator {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.product-feature-card.products.Configurator {
+  width: clamp(200px, 50%, 400px);
+  height: 16rem !important;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  flex-direction: column;
+  background-color: var(--green-opaque);
+  border-radius: 20px;
+  border: 4px solid transparent; /* Start with transparent border */
+  cursor: pointer;
+
+  /* Smooth transitions for colors, borders, and background */
+  transition: 
+    all 0.5s ease,
+}
+
+.product-feature-card.products.Configurator .model-image {
+  width: 100%;
+  height: 10rem;
+  object-fit: contain;
+  justify-content: center;
+}
+
+
+.product-feature-card.products.Configurator .area-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* center children vertically */
+  gap: 0.5rem;
+  background: none;
+  cursor: pointer;
+}
+
+.product-feature-card.products.Configurator .area-button svg {
+  display: inline-block;
+  margin-bottom: -0.7rem;
+  width: 40px;
+  transition: transform 0.5s ease-in-out;
+}
+
+.product-feature-card.products.Configurator .area-button path {
+  display: inline-block;
+  fill: var(--engbakken-color);
+  transition: fill 0.5s ease; /* Smooth fill transition */
+}
+
+/* Hover effects */
+.product-feature-card.products.Configurator:hover {
+  border-color: var(--engbakken-color);
+}
+
+.product-feature-card.products.Configurator:hover svg {
+  transform: translateX(70%);
+}
+
+.product-feature-card.products.Configurator:hover .area-button path {
+  fill: var(--logo-color);
+}
+
+.product-feature-card.products.Configurator.active {
+  color: var(--logo-color);
+  background-color: white;
+  border-color: var(--engbakken-color);
+}
+
+.product-feature-card.products.Configurator.active .area-button path {
+  fill: var(--logo-color);
+}
+
+
+.product-config-info-configurator {
+  display: none;
+}
+
+.product-config-info-configurator:hover {
+  display: block;
+}
+
+.product-feature-card.products.Configurator {
+  max-width: 100vw;
+}
+
+.product-feature-card.products.Configurator .product-button[data-button="Only-Tools"] {
+  display: block;
+  scale: 70%;
+  margin-top: -2rem;
+}
+
+.product-feature-card.products.Configurator .product-button[data-button="Only-Tools"].active{
+  background-color: white;
+  color: var(--logo-color);
+  border-color: 5px solid var(--engbakken-color);
+}
+
+#Program.product-feature-card.products.Configurator {
+  width: calc(3*400px + 4rem);
+}
+
+#Program.product-feature-card.products.Configurator .product-heading {
+  color: black;
+  margin-top: 0.1rem;
+  margin-bottom: 1.2rem;
+}
+
+#Program.product-feature-card.products.Configurator .navlink {
+  display: flex;
+  align-content: center;
+  gap: 4rem;
+}

@@ -5,7 +5,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Thorium against localhost",
-            "url": "http://interwave.local",
+            "url": "http://127.0.0.1:3000",
             "webRoot": "${workspaceFolder}",
             "runtimeExecutable": "/usr/bin/thorium-browser"
         }

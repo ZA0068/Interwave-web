@@ -1,0 +1,235 @@
+{
+    "name": "Re-Bot™ Premium",
+    "createdAt": "2025-12-23T20:13:38.767Z",
+    "features": {
+        "Robot": {
+            "Features": {
+                "Brand": "Re-Bot",
+                "Model": "Premium",
+                "Configuration scope": "Excellent",
+                "Power capacity": "450kW",
+                "Linkage": "Duo",
+                "Battery capacity": "Basis",
+                "Color": "Defence",
+                "Branch Variant": "Defender",
+                "Module": "Dual"
+            },
+            "Equipment": {
+                "Flex-Drive™ (CTI)": "✘",
+                "Ground contact": "Tyres",
+                "Track based": "GROUND-KARE-600"
+            },
+            "Accessories": {
+                "Tool-LiftAlign™": "✔",
+                "Tool-Procision™": null,
+                "Tool-Bridge™": "✔"
+            },
+            "Extra equipment": {
+                "Power-Unit™": "Powerbank",
+                "Draw-Bar™": "Active-Steering"
+            },
+            "Subscription": {
+                "Service": "Platinum",
+                "Mac-Mapp": "✔",
+                "Software": {
+                    "Users": {
+                        "Operational-Administrator": "2",
+                        "On-Site-Operators": "2"
+                    },
+                    "Swarm": {
+                        "Re-Bot-UGV": "3",
+                        "Sky-Vision-UAV": "3"
+                    },
+                    "Drive-Cab": "✔",
+                    "Vision-Based™": "Excellent",
+                    "Sky-Vision": "✔"
+                }
+            }
+        },
+        "Header": {
+            "Innovation Partner": true,
+            "Robot": true,
+            "Acquire": null,
+            "Tools": {
+                "Bulk-Dump": false,
+                "Bulk-Agro": false,
+                "Cargo-Load": false,
+                "Beach-Cleaner": true,
+                "Re-Dresser": true
+            },
+            "Branch": "Defence",
+            "Purchase method": "Buy"
+        },
+        "Tools": {
+            "Beach-Cleaner": {
+                "Name": "Beach-Cleaner™",
+                "Features": {
+                    "Type": "Beach-Cleaner-2.5"
+                }
+            },
+            "Re-Dresser": {
+                "Name": "Re-Dresser™",
+                "Features": {
+                    "Type": "Re-Dresser-2.5",
+                    "Property": "Basis"
+                }
+            },
+            "Subscription": {
+                "Mac-Mapp": "✔",
+                "Service": "Gold",
+                "Software": {
+                    "Tool-Control™ (ISO-BUS)": "Basis",
+                    "Tool-Control": "Standard",
+                    "Vision-Based™": "Standard"
+                }
+            }
+        }
+    },
+    "bitindex": {
+        "0": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "1": {
+            "index": 3,
+            "bitsize": 2
+        },
+        "2": {
+            "index": 4,
+            "bitsize": 3
+        },
+        "3": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "4": {
+            "index": 2,
+            "bitsize": 2
+        },
+        "5": {
+            "index": 4,
+            "bitsize": 3
+        },
+        "6": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "7": {
+            "index": 1,
+            "bitsize": 2
+        },
+        "8": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "9": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "10": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "11": {
+            "index": 4,
+            "bitsize": 4
+        },
+        "13": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "15": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "16": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "17": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "18": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "22": {
+            "index": 1,
+            "bitsize": 2
+        },
+        "24": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "25": {
+            "index": 0,
+            "bitsize": 1
+        },
+        "27": {
+            "index": 1,
+            "bitsize": 2
+        },
+        "28": {
+            "index": 1,
+            "bitsize": 11
+        },
+        "29": {
+            "index": 0,
+            "bitsize": 2
+        },
+        "33": {
+            "index": 1,
+            "bitsize": 2
+        },
+        "34": {
+            "index": "2",
+            "bitsize": 12
+        },
+        "35": {
+            "index": "2",
+            "bitsize": 12
+        },
+        "36": {
+            "index": "3",
+            "bitsize": 12
+        },
+        "37": {
+            "index": "3",
+            "bitsize": 12
+        },
+        "38": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "39": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "40": {
+            "index": 2,
+            "bitsize": 2
+        },
+        "45": {
+            "index": 2,
+            "bitsize": 2
+        },
+        "46": {
+            "index": 3,
+            "bitsize": 2
+        },
+        "47": {
+            "index": 2,
+            "bitsize": 2
+        },
+        "48": {
+            "index": 1,
+            "bitsize": 1
+        },
+        "null": {
+            "index": 0,
+            "bitsize": null
+        }
+    },
+    "id": null
+}
